@@ -1,0 +1,6 @@
+[book]
+authors = ["Mark Henderson"]
+language = "en"
+multilingual = false
+src = "src"
+title = "The offchain::ipfs Manual"
