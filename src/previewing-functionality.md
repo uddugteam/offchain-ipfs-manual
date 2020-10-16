@@ -26,7 +26,7 @@ Make sure the "Extrinsic" radio button is active, and then select `templateModul
 
 Then, select the callable you want from the list of callables that become available:
 
-TODO: new screenshot once the pinning functions return
+![Pallet Interactor Screenshot 2](./img/pallet-interactor-2.png)
 
 Once a callable is selected, an additional text field or fields will appear below the Callables
 select box. Type the arguments in and then click *Signed*. Watch your node logs and also the
