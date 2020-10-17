@@ -24,6 +24,9 @@ jobs:
 
       - name: Build and push to gh-pages
         run: |
+          git config --local user.email "eq-mdbook@users.noreply.github.com"
+          git config --local user.name "Equilibrium Mdbook Builder"
+
           git worktree add /tmp/book gh-pages
           mdbook build
           rm -rf /tmp/book/*
