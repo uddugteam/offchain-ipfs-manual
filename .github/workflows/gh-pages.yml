@@ -10,6 +10,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Install rust toolchain
         uses: hecrj/setup-rust-action@v1.3.4
@@ -22,13 +24,12 @@ jobs:
 
       - name: Build and push to gh-pages
         run: |
-          git fetch
           git worktree add /tmp/book gh-pages
           mdbook build
           rm -rf /tmp/book/*
           cp -rp book/* /tmp/book/
           cd /tmp/book
           git add -A
-          git commit 'new mdbook render'
+          git commit -m 'new mdbook render'
           git push origin gh-pages
           cd -
