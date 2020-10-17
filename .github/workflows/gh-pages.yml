@@ -22,6 +22,7 @@ jobs:
 
       - name: Build and push to gh-pages
         run: |
+          git fetch
           git worktree add /tmp/book gh-pages
           mdbook build
           rm -rf /tmp/book/*
