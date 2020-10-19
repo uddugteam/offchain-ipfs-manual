@@ -162,34 +162,29 @@
                 <div id="content" class="content">
                     <main>
                         <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
-<p><a href="https://substrate.io">Substrate</a> is a blockchain and smart contract framework written in the Rust programming language.
-The InterPlanetary File System (or <a href="https://ipfs.io">IPFS</a>) is a distributed, peer-to-peer,
-content-addressed storage framework.</p>
-<p>Substrate has many features that differentiate it from a typical blockchain framework. One
-such feature is <a href="https://www.substrate.io/kb/learn-substrate/off-chain-workers">Off-Chain Workers</a>, which are separate wasm execution contexts that run alongside
-your blockchain node’s runtime, enabling you to make send and receive data from external sources,
-such as HTTP APIs.</p>
-<p>Thinking about an Off-Chain Worker in the context of IPFS led us to develop this functionality,
-called <code>offchain::ipfs</code>. This gives you a reduced, but still powerful, subset of IPFS commands
-you can call right from your pallet, on block creation, to achieve things like:</p>
+<p><code>offchain::ipfs</code> is <a href="https://substrate.io">Substrate</a>, infused with <a href="https://ipfs.io">IPFS</a>.</p>
+<p>By including <a href="https://github.com/rs-ipfs/rust-ifps">Rust IPFS</a> in the native
+Substrate runtime, and by allowing pass-through wasm calls via Substrate's
+<a href="https://www.substrate.io/kb/learn-substrate/off-chain-workers">Off-chain Workers</a>, we enable a powerful and familiar subset of the IPFS APIs, including:</p>
 <ul>
-<li>Bytes -&gt; Content ID (CID) data storage</li>
-<li>CID -&gt; Bytes data storage</li>
-<li>Peer and content discovery via the distributed hash table (DHT)</li>
-<li>Libp2p connection and swarming with other IPFS peers</li>
-<li>Pinning and unpinning CIDs</li>
+<li><code>ipfs add</code> - Write data to IPFS</li>
+<li><code>ipfs cat</code> - Read data from IPFS</li>
+<li><code>ipfs dht findpeer</code> - Discover peers</li>
+<li><code>ipfs dht findprovs</code> - Discover content</li>
+<li><code>ipfs swarm connect</code> / <code>disconnect</code> - Swarm with other IPFS peers</li>
+<li><code>ipfs pin add</code> / <code>rm</code> - Pin and unpin content</li>
 </ul>
-<p>This material and Rust IPFS itself are presented by the rs-ipfs team:
-<a href="https://github.com/koivunej">@koivunej</a>, <a href="https://github.com/ljedrz">@ljedrz</a>, <a href="https://github.com/whalelephant">@whalelephant</a>, and <a href="https://github.com/aphelionz">@aphelionz</a></p>
-<p>TODO: Video embed in book</p>
-<h2><a class="header" href="#a-quick-note-about-node-template" id="a-quick-note-about-node-template">A quick note about <code>node-template</code></a></h2>
-<p>The primary value of this work is the embedded IPFS node itself and its Off-chain Worker APIs.</p>
-<p>We reference the <code>node-template</code> pallet and executable throughout this manual. This included pallet
-is meant to be a showcase of the embedded IPFS node, and is just one of many possible integrations
-and uses cases that are possible. More IPFS functionalities could be exposed, and the ones exposed
-could be improved and personalized further.</p>
-<p>Finally, while we are moving towards documenting and releasing this work in a more official
-capacity, <code>offchain::ipfs</code> should still be considered an alpha preview.</p>
+<p>This means <em>no separate executable</em>: both blockchain and distributed storage are together in one.</p>
+<p>The <code>offchain::ipfs</code> Manual is the documentation of our efforts, as well as useful explanations
+and code examples to get you started using this technology. Due to <code>offchain::ipfs</code> being a
+well-maintained fork of <a href="https://github.com/paritytech/substrate">paritytech/substrate</a>, this manual also stands in as typical
+documentation, such as docs.rs and README.md files.</p>
+<p>This manual is presented by: <a href="https://github.com/koivunej">@koivunej</a>, <a href="https://github.com/ljedrz">@ljedrz</a>, <a href="https://github.com/whalelephant">@whalelephant</a>, and <a href="https://github.com/aphelionz">@aphelionz</a></p>
+<h2><a class="header" href="#disclaimers" id="disclaimers">Disclaimers</a></h2>
+<p>You should still consider this an <strong>alpha preview</strong>.</p>
+<p>The primary value of this work is the embedded IPFS node itself. The pallet included in the
+<code>node-template</code> binary is only meant as a showcase, and is just one of many possible realizations
+of <code>offchain::ipfs</code>.</p>
 <h1><a class="header" href="#getting-started" id="getting-started">Getting Started</a></h1>
 <p>Our <a href="https://github.com/rs-ipfs/substrate">code base</a> is currently a well-maintained fork of <a href="https://github.com/paritytech/substrate">paritytech/substrate</a> and will remain so
 until we are confident enough to make a PR proposing its inclusion to Substrate’s core.</p>
