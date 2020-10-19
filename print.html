@@ -186,99 +186,96 @@ documentation, such as docs.rs and README.md files.</p>
 <code>node-template</code> binary is only meant as a showcase, and is just one of many possible realizations
 of <code>offchain::ipfs</code>.</p>
 <h1><a class="header" href="#getting-started" id="getting-started">Getting Started</a></h1>
-<p>Our <a href="https://github.com/rs-ipfs/substrate">code base</a> is currently a well-maintained fork of <a href="https://github.com/paritytech/substrate">paritytech/substrate</a> and will remain so
-until we are confident enough to make a PR proposing its inclusion to Substrate’s core.</p>
-<p>In the meantime, and for simplicity’s sake, we are using a Docker image for delivery. Additionally,
-we will cover how to use the baseline <a href="https://github.com/substrate-developer-hub/substrate-front-end-template">substrate-front-end-template</a> to quickly preview
-the functionality.</p>
-<p>TODO: Anything else here?</p>
-<h2><a class="header" href="#using-the-docker-image" id="using-the-docker-image">Using the Docker image</a></h2>
-<p>Currently, the recommended way to use <code>offchain::ipfs</code> is via the Docker image provided by
-<a href="https://equilibrium.co">Equilibrium</a>.</p>
-<p>Simply pull the [eqlabs/substrate-ipfs] image from Docker Hub:</p>
-<pre><code class="language-bash">$ docker pull eqlabs/substrate-ipfs
+<p>You can get up and running in about 15 minutes by:</p>
+<ul>
+<li>Running <code>offchain::ipfs</code> via the provided docker image</li>
+<li>Previewing the functionality via the <a href="https://github.com/substrate-developer-hub/substrate-front-end-template">substrate-front-end-template</a></li>
+</ul>
+<blockquote>
+<p><strong>Why a Docker image?</strong><br /><a href="https://github.com/rs-ipfs/substrate"><code>offchain::ipfs</code></a> is currently a well-maintained fork of
+<a href="https://github.com/paritytech/substrate">paritytech/substrate</a>. Until we are ready to make an upstream PR, we are using a Docker image
+for simplicity's sake.</p>
+</blockquote>
+<h1><a class="header" href="#using-the-docker-image" id="using-the-docker-image">Using the Docker image</a></h1>
+<p>The recommended way to use <code>offchain::ipfs</code> is via the <a href="https://hub.docker.com/r/eqlabs/offchain-ipfs">eqlabs/offchain-ipfs</a> image.</p>
+<h2><a class="header" href="#installing-the-image" id="installing-the-image">Installing the image</a></h2>
+<pre><code class="language-bash"># Pull the image from Docker Hub
+$ docker pull eqlabs/offchain-ipfs
 </code></pre>
 <p>The image comes with two binaries:</p>
 <ol>
-<li><code>node-template</code> - which serves as a preview pallet and reference implementation</li>
-<li><code>substrate-ipfs</code> - which is the real deal. Substrate infused with IPFS</li>
+<li>The default <code>node-template</code> contains our custom pallet to preview the Offchain::ipfs
+functionalities through transactions</li>
+<li>The <code>substrate</code> binary does not have our custom pallets to interact with the IPFS node,
+instead you can connect to it through its multiaddr</li>
 </ol>
-<h2><a class="header" href="#running-node-template" id="running-node-template">Running <code>node-template</code></a></h2>
-<p>By default, the container will execute a command for starting the node-template binary with a
-development chainspec. We expose the default websockets, rpc, p2p and prometheus ports from the
-container to the host machine for interactions.</p>
-<pre><code class="language-bash">$ docker run \
-    -p 9944:9944 \            # websockets
-    -p 9933:9933 \            # rpc
-    -p 30333:30333 \          # p2p
-    -p 9615:9615 \            # prometheus
-    -it \
-    --rm \
-    --name node-template \
-    substrate-ipfs
+<p>The image exposes ports <code>9944</code> for WebSockets, <code>9933</code> for RPC, <code>30333</code> for p2p, and <code>9615</code> for
+Prometheus.</p>
+<h2><a class="header" href="#running-the-image" id="running-the-image">Running the image</a></h2>
+<p>The default command for the image is:</p>
+<p><code>node-template --ws-external --rpc-external --base-path=/offchain-ipfs --dev</code></p>
+<p>Run the default like so:</p>
+<pre><code class="language-bash">docker run -p 9944:9944 \
+  -p 9933:9933 \
+  -p 30333:30333 \
+  -p 9615:9615 \
+  -it \
+  --rm \
+  --name node-template \
+  eqlabs/offchain-ipfs
 </code></pre>
-<h2><a class="header" href="#running-substrate-ipfs" id="running-substrate-ipfs">Running <code>substrate-ipfs</code></a></h2>
-<pre><code class="language-bash">$ docker run \
-    -p 9944:9944 \            # websockets
-    -p 9933:9933 \            # rpc
-    -p 30333:30333 \          # p2p
-    -p 9615:9615 \            # prometheus
-    -it \
-    --rm \
-    --name sub-ipfs \
-    substrate-ipfs \
-    substrate                 # Override default command
+<p>To override the default and run <code>substrate</code>, for example:</p>
+<pre><code class="language-bash">docker run \
+  -p 9944:9944 \
+  -p 9933:9933 \
+  -p 30333:30333 \
+  -p 9615:9615 \
+  -it \
+  --rm \
+  --name sub-ipfs \
+  offchain-ipfs \
+  substrate
 </code></pre>
-<h2><a class="header" href="#container-customizations" id="container-customizations">Container customizations</a></h2>
-<p>Several options are already available to tailor your container's runtime to suit your needs.</p>
+<p>This will work with any arguments you'd normally pass to <code>substrate</code></p>
 <h3><a class="header" href="#persistent-storage" id="persistent-storage">Persistent Storage</a></h3>
 <p>To run with persistent storage volume between containers, first create a volume:</p>
-<pre><code class="language-bash">$ docker volume create substrate-ipfs-vol
+<pre><code class="language-bash">$ docker volume create offchain-ipfs-vol
 </code></pre>
-<p>Then add <code>-v substrate-ipfs-vol:/substrate-ipfs</code> to the docker run commands above.</p>
-<h3><a class="header" href="#running-a-custom-command" id="running-a-custom-command">Running a custom command</a></h3>
-<p>To overwrite the default container commands, simply add the binary name followed by
-flags, options, or subcommands to the end of the <code>docker run</code> command.</p>
-<h3><a class="header" href="#complete-customization-example" id="complete-customization-example">Complete customization example</a></h3>
-<p>Putting it all together, a complete command with a persistent volume and a custom
-executable command might look something like this:</p>
-<p>For example, to display the help information from <code>substrate</code></p>
-<pre><code class="language-bash">$ docker run \
-    -p 9944:9944 \
-    -p 9933:9933 \
-    -p 30333:30333 \
-    -p 9615:9615 \
-    -it \
-    --rm \
-    --name sub-ipfs \
-    -v substrate-ipfs-vol:/substrate-ipfs \       # mounted docker volume
-    substrate-ipfs \
-    substrate --help                              # override custom command
-</code></pre>
-<h1><a class="header" href="#previewing-the-functionality-with-a-nice-ui" id="previewing-the-functionality-with-a-nice-ui">Previewing the functionality with a nice UI</a></h1>
-<p>If you’re looking for a quick demo of the functionality, the simplest thing to do is to launch
-the [substrate-frontend-template] UI.</p>
-<p>First run the docker image via the instructions in the previous section, and then run the 
-following steps:</p>
+<p>Then add <code>-v offchain-ipfs-vol:/offchain-ipfs</code> to the docker run commands above.</p>
+<h1><a class="header" href="#previewing-the-functionality-in-a-ui" id="previewing-the-functionality-in-a-ui">Previewing the functionality in a UI</a></h1>
+<p>If you’re looking for a quick demo of the functionality, the simplest thing to do after running the
+Docker container's default command is to launch the <a href="https://github.com/substrate-developer-hub/substrate-front-end-template">substrate-front-end-template</a> UI.</p>
+<h2><a class="header" href="#instructions" id="instructions">Instructions</a></h2>
+<ol>
+<li>If you have <a href="https://nodejs.org">node.js</a> and <a href="https://yarnpkg.com">yarn</a> installed on your machine, run the following commands:</li>
+</ol>
 <pre><code class="language-bash">$ git clone https://github.com/substrate-developer-hub/substrate-front-end-template
 $ cd substrate-front-end-template
 $ yarn install
 $ yarn start
 </code></pre>
-<p>This will automatically launch a browser with a UI allowing you to interact with your node's
-capabilities.</p>
-<h2><a class="header" href="#using-offchainipfs-via-the-ui" id="using-offchainipfs-via-the-ui">Using <code>offchain::ipfs</code> via the UI</a></h2>
-<p>Once the browser page opens, scroll to the bottom to the <strong>Pallet Interactor</strong> section.
-Make sure the &quot;Extrinsic&quot; radio button is active, and then select <code>templateModule</code> from the
-&quot;Pallets / RPC&quot; dropdown.</p>
-<p><img src="./img/pallet-interactor-1.png" alt="Pallet Interactor Screenshot 1" /></p>
-<p>Then, select the callable you want from the list of callables that become available:</p>
-<p><img src="./img/pallet-interactor-2.png" alt="Pallet Interactor Screenshot 2" /></p>
-<p>Once a callable is selected, an additional text field or fields will appear below the Callables
-select box. Type the arguments in and then click <em>Signed</em>. Watch your node logs and also the
-extrinsic events to the right for output and information.</p>
-<p><img src="./img/pallet-interactor-3.png" alt="Pallet Interactor Screenshot 3" /></p>
-<p>Read on for a detailed list of callables that <code>offchain::ipfs</code> exposes.</p>
+<ol start="2">
+<li>Once the UI opens in your browser, scroll down to the <strong>Pallet Interactor</strong> section at the bottom.</li>
+<li>Keep the default &quot;Extrinsic&quot; active, then select <code>templateModule</code> from the first dropdown.</li>
+</ol>
+<center><img alt="" src="./img/pallet-interactor-1.png" /></center>
+<ol start="4">
+<li>Then, select the callable you want from the list of callables that become available:</li>
+</ol>
+<center><img alt="" src="./img/pallet-interactor-2.png" /></center>
+<ol start="5">
+<li>An additional text field or fields will appear below the last select box. Type the arguments
+in and then click <em>Signed</em>.</li>
+</ol>
+<center><img alt="" src="./img/pallet-interactor-3.png" /></center>
+<ol start="6">
+<li>Watch your node logs and also the extrinsic events to the right for
+output and information.</li>
+</ol>
+<h2><a class="header" href="#now-what" id="now-what">Now what?</a></h2>
+<p>This demo is based on our included <code>templateModule</code> pallet - mostly meant as a showcase
+of the embedded [Rust IPFS] node. In the next section we will walk you through this pallet,
+which will be instructive as a reference implementation.</p>
 <h1><a class="header" href="#offchainipfs-callables" id="offchainipfs-callables">offchain::ipfs callables</a></h1>
 <p>The following callables are available to you. These were chosen due to popularity and to try
 and give substrate uses the most cohesive and familiar experience using IPFS within their node.</p>
@@ -515,9 +512,9 @@ connect to port 9944 via WebSockets.</p>
 <h2><a class="header" href="#building-the-docker-image-from-source" id="building-the-docker-image-from-source">Building the docker image from source</a></h2>
 <pre><code class="language-bash">$ git clone https://github.com/rs-ipfs/substrate
 $ cd substrate
-$ docker build --file .maintain/Dockerfile --tag substrate-ipfs .
+$ docker build --file .maintain/Dockerfile --tag [your-org/]offchain-ipfs .
 </code></pre>
-<p>This is a multistage build with the target being an image with name substrate-ipfs:latest
+<p>This is a multistage build with the target being an image with name offchain-ipfs:latest
 containing the substrate binary and the node-template binary.</p>
 <p>Note that this will take forever</p>
 <h2><a class="header" href="#running-the-node-from-source" id="running-the-node-from-source">Running the node from source</a></h2>

@@ -163,9 +163,9 @@
 <h2><a class="header" href="#building-the-docker-image-from-source" id="building-the-docker-image-from-source">Building the docker image from source</a></h2>
 <pre><code class="language-bash">$ git clone https://github.com/rs-ipfs/substrate
 $ cd substrate
-$ docker build --file .maintain/Dockerfile --tag substrate-ipfs .
+$ docker build --file .maintain/Dockerfile --tag [your-org/]offchain-ipfs .
 </code></pre>
-<p>This is a multistage build with the target being an image with name substrate-ipfs:latest
+<p>This is a multistage build with the target being an image with name offchain-ipfs:latest
 containing the substrate binary and the node-template binary.</p>
 <p>Note that this will take forever</p>
 <h2><a class="header" href="#running-the-node-from-source" id="running-the-node-from-source">Running the node from source</a></h2>
