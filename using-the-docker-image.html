@@ -202,7 +202,7 @@ Prometheus.</p>
 <p>This will work with any arguments you'd normally pass to <code>substrate</code></p>
 <h3><a class="header" href="#persistent-storage" id="persistent-storage">Persistent Storage</a></h3>
 <p>To run with persistent storage volume between containers, first create a volume:</p>
-<pre><code class="language-bash">$ docker volume create offchain-ipfs-vol
+<pre><code class="language-bash">docker volume create offchain-ipfs-vol
 </code></pre>
 <p>Then add <code>-v offchain-ipfs-vol:/offchain-ipfs</code> to the docker run commands above.</p>
 

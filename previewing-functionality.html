@@ -164,32 +164,36 @@
 Docker container's default command is to launch the <a href="https://github.com/substrate-developer-hub/substrate-front-end-template">substrate-front-end-template</a> UI.</p>
 <h2><a class="header" href="#instructions" id="instructions">Instructions</a></h2>
 <ol>
-<li>If you have <a href="https://nodejs.org">node.js</a> and <a href="https://yarnpkg.com">yarn</a> installed on your machine, run the following commands:</li>
-</ol>
-<pre><code class="language-bash">$ git clone https://github.com/substrate-developer-hub/substrate-front-end-template
-$ cd substrate-front-end-template
-$ yarn install
-$ yarn start
+<li>
+<p>If you have <a href="https://nodejs.org">node.js</a> and <a href="https://yarnpkg.com">yarn</a> installed on your machine, run the following commands:</p>
+<pre><code class="language-bash">git clone https://github.com/substrate-developer-hub/substrate-front-end-template
+cd substrate-front-end-template
+yarn install
+yarn start
 </code></pre>
-<ol start="2">
-<li>Once the UI opens in your browser, scroll down to the <strong>Pallet Interactor</strong> section at the bottom.</li>
-<li>Keep the default &quot;Extrinsic&quot; active, then select <code>templateModule</code> from the first dropdown.</li>
-</ol>
+</li>
+<li>
+<p>Once the UI opens in your browser, scroll down to the <strong>Pallet Interactor</strong> section at the bottom.</p>
+</li>
+<li>
+<p>Keep the default &quot;Extrinsic&quot; active, then select <code>templateModule</code> from the first dropdown.</p>
 <center><img alt="" src="./img/pallet-interactor-1.png" /></center>
-<ol start="4">
-<li>Then, select the callable you want from the list of callables that become available:</li>
-</ol>
+</li>
+<li>
+<p>Then, select the callable you want from the list of callables that become available:</p>
 <center><img alt="" src="./img/pallet-interactor-2.png" /></center>
-<ol start="5">
-<li>An additional text field or fields will appear below the last select box. Type the arguments
-in and then click <em>Signed</em>.</li>
-</ol>
+</li>
+<li>
+<p>An additional text field or fields will appear below the last select box. Type the arguments
+in and then click <em>Signed</em>.</p>
 <center><img alt="" src="./img/pallet-interactor-3.png" /></center>
-<ol start="6">
-<li>Watch your node logs and also the extrinsic events to the right for
-output and information.</li>
+</li>
+<li>
+<p>Watch your node logs and also the extrinsic events to the right for
+output and information.</p>
+</li>
 </ol>
-<h2><a class="header" href="#now-what" id="now-what">Now what?</a></h2>
+<h2><a class="header" href="#now-what" id="now-what">Now what</a></h2>
 <p>This demo is based on our included <code>templateModule</code> pallet - mostly meant as a showcase
 of the embedded [Rust IPFS] node. In the next section we will walk you through this pallet,
 which will be instructive as a reference implementation.</p>
