@@ -1,0 +1,443 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Example Pallet - The offchain::ipfs Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="template-pallet.html" class="active"><strong aria-hidden="true">3.1.</strong> Example Pallet</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">3.1.1.</strong> Callables reference</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> Rust clients</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> JavaScript clients</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">4.</strong> Contributing / Development</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.2.</strong> Architectural Explanation</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">The offchain::ipfs Manual</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#example-pallet" id="example-pallet">Example Pallet</a></h1>
+<p><code>offchain::ipfs</code> comes with a showcase <strong><a href="https://substrate.dev/docs/en/knowledgebase/runtime/pallets">pallet</a></strong>, which is essentially a Rust module that
+complies with the requirements to be included within a substrate <strong>runtime</strong>.</p>
+<blockquote>
+<p><strong>This pallet is meant only as an example.</strong> We're including it to be helpful for future pallet authors
+that want to use the embedded native IPFS node to suit their needs.</p>
+</blockquote>
+<p>If you're familiar with Substrate and the Framework for Runtime Aggregation of Modularized Entities
+(FRAME), you can simply view the <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs_bleeding_edge/bin/node-template/pallets/template/src/lib.rs">source code</a> for this pallet. Otherwise, read on as we go through
+the code step by step.</p>
+<p>Please note the order in which these concepts are explained here is not necessarily the order that
+they appear in the code.</p>
+<p>You can also learn more by following the <a href="https://substrate.dev/docs/en/tutorials/build-a-dapp/pallet">Building a Custom Pallet</a> tutorial.</p>
+<h2><a class="header" href="#prelude" id="prelude">Prelude</a></h2>
+<p>We start by using items from the native runtime. Our pallet is <code>no_std</code> since we're targeting <code>Wasm</code></p>
+<pre><code class="language-rust ignore">#![cfg_attr(not(feature = &quot;std&quot;), no_std)]
+// ...
+use sp_core::offchain::{
+  Duration, IpfsRequest, IpfsResponse, OpaqueMultiaddr, Timestamp
+};
+// ...
+use sp_runtime::offchain::ipfs;
+</code></pre>
+<h2><a class="header" href="#command-types" id="command-types">Command Types</a></h2>
+<p>When your JSON-RPC calls are received by the pallet, the requests are
+expressed as <code>___Command</code> enums and stored in the off-chain worker storage as
+a queue, to be ingested by your native runtime and passed to IPFS.</p>
+<p>Derive attributes are omitted.</p>
+<pre><code class="language-rust ignore">// Commands involved in peer-to-peer connections
+enum ConnectionCommand {
+    ConnectTo(OpaqueMultiaddr),
+    DisconnectFrom(OpaqueMultiaddr),
+}
+
+// Commands that add, remove, pin, unpin, and output data
+enum DataCommand {
+    AddBytes(Vec&lt;u8&gt;),
+    CatBytes(Vec&lt;u8&gt;),
+    InsertPin(Vec&lt;u8&gt;),
+    RemoveBlock(Vec&lt;u8&gt;),
+    RemovePin(Vec&lt;u8&gt;),
+}
+
+// Commands that query the distributed hash table (DHT)
+// for peers and content
+enum DhtCommand {
+    FindPeer(Vec&lt;u8&gt;),
+    GetProviders(Vec&lt;u8&gt;),
+}
+</code></pre>
+<h2><a class="header" href="#the-runtime-configuration-trait" id="the-runtime-configuration-trait">The runtime configuration trait</a></h2>
+<p>The <code>system::Trait</code> trait (not to be confused with the Rust <code>trait</code> keyword), allows you to define
+which capabilities from the runtime you want to include, and how you want to use them. You can also
+&quot;tightly couple&quot; your pallet to other pallets by adding their <code>Trait</code>s to your pallet's
+inherited trait list.</p>
+<p>Here, however, we keep things simple by:</p>
+<ol>
+<li>Loosely coupling this pallet by leaving out inherited traits</li>
+<li>Including only the required <code>Event</code> type</li>
+</ol>
+<pre><code class="language-rust ignore">/// The pallet's configuration trait.
+pub trait Trait: system::Trait { // Use traits here to tightly couple to runtime
+    /// The overarching event type.
+    type Event: From&lt;Event&lt;Self&gt;&gt; + Into&lt;&lt;Self as system::Trait&gt;::Event&gt;;
+}
+</code></pre>
+<p>Later in the code, we implement some helper functions on the <code>Module</code> struct. The function
+bodies are omitted for brevity's sake.</p>
+<pre><code class="language-rust ignore">impl&lt;T: Trait&gt; Module&lt;T&gt; {
+    // &quot;Sends&quot; a request to the local IPFS node by adding it to the offchain storage
+    fn ipfs_request(req: IpfsRequest, deadline: impl Into&lt;Option&lt;Timestamp&gt;&gt;)
+      -&gt; Result&lt;IpfsResponse, Error&lt;T&gt;&gt;
+
+    // Reads from the `ConnectionQueue` and connects / disconnects
+    // from desired / undesired peers, respectively
+    fn connection_housekeeping() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+
+    // Reads `FindPeer` and `GetProviders` commands from the `DhtQueue`,
+    // and requests their execution from the native runtime
+    fn handle_dht_requests() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+
+    // Reads `AddBytes`, `CatBytes`, `DataCommand`, `RemoveBlock`, `InsertPin`,
+    // and `RemovePin` commands from the `DataQueue` and requests their
+    // execution from the native runtime.
+    fn handle_data_requests() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+
+    // Logs metadata (the number of connected peers) to the console at the DEBUG log level
+    fn print_metadata() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+</code></pre>
+<h2><a class="header" href="#the-decl_-macros" id="the-decl_-macros">The <code>decl_</code> macros</a></h2>
+<p>Pallets included in Substrate runtimes must adhere to the conventions of <a href="https://substrate.dev/docs/en/knowledgebase/runtime/frame">FRAME</a>.
+In practice, this means you must implement <code>decl_</code> macros:</p>
+<ul>
+<li><code>decl_module!</code></li>
+<li><code>decl_event!</code></li>
+<li><code>decl_storage!</code></li>
+<li><code>decl_error!</code></li>
+</ul>
+<h3><a class="header" href="#decl_storage" id="decl_storage"><code>decl_storage!</code></a></h3>
+<p>Here, we define the data that will actually be stored on-chain when calling <strong>extrinsics</strong>.</p>
+<p>Since the offchain-worker can't perform I/O outside of the wasm context, we store our requests as
+queues, to be processed on a periodic basis, consumed, and ultimately performed by the native
+runtime.</p>
+<p>This is where we use the <code>ConnectionQueue</code>, <code>DataQueue</code>, and <code>DhtQueue</code> command types from above.</p>
+<pre><code class="language-rust ignore">// This pallet's storage items.
+decl_storage! {
+    trait Store for Module&lt;T: Trait&gt; as TemplateModule {
+        // A list of addresses to connect to and disconnect from.
+        pub ConnectionQueue: Vec&lt;ConnectionCommand&gt;;
+        // A queue of data to publish or obtain on IPFS.
+        pub DataQueue: Vec&lt;DataCommand&gt;;
+        // A list of requests to the DHT.
+        pub DhtQueue: Vec&lt;DhtCommand&gt;;
+    }
+}
+</code></pre>
+<h3><a class="header" href="#decl_event" id="decl_event"><code>decl_event!</code></a></h3>
+<p>This is where we define what those events are and what they contain.</p>
+<p>Once a command is sent to the off-chain worker, one of the following chain events is emitted.</p>
+<pre><code class="language-rust ignore">// The pallet's events
+decl_event!(
+    pub enum Event&lt;T&gt; where AccountId = &lt;T as system::Trait&gt;::AccountId {
+        ConnectionRequested(AccountId),
+        DisconnectRequested(AccountId),
+        QueuedDataToAdd(AccountId),
+        QueuedDataToCat(AccountId),
+        QueuedDataToPin(AccountId),
+        QueuedDataToRemove(AccountId),
+        QueuedDataToUnpin(AccountId),
+        FindPeerIssued(AccountId),
+        FindProvidersIssued(AccountId),
+    }
+);
+</code></pre>
+<h3><a class="header" href="#decl_module" id="decl_module"><code>decl_module!</code></a></h3>
+<p>This section, perhaps the most critical section of any given pallet, is where you can define
+functions that are exposed via JSON-RPC to client libraries and, by proxy, your users.</p>
+<p>In practice, the bulk of what these functions do is to modify the <code>DataQueue</code>, <code>DhtQueue</code>, and
+<code>ConnectionQueue</code> storage objects by pushing signed command requests to their respective queues.</p>
+<p>Some default types in the functions are omitted, but we've kept the <code>#[weight]</code> attributes around.</p>
+<blockquote>
+<p>The Substrate docs define one unit of weight as &quot;one picosecond of execution time on
+fixed reference hardware.&quot; These are essentially <em>time limits</em> for block creation, and can be
+(indirectly) mapped to transaction fees analogous to something like &quot;gas fees.&quot; Read more about
+<a href="https://substrate.dev/docs/en/knowledgebase/learn-substrate/weight">weights</a> if you're curious.</p>
+</blockquote>
+<pre><code class="language-rust ignore">// The pallet's dispatchable functions.
+decl_module! {
+    /// The module declaration.
+    pub struct Module&lt;T: Trait&gt; for enum Call where origin: T::Origin {
+        // Called at the beginning of every block before any extrinsics. Clears
+        // `ConnectionQueue` and `DhtQueue` values every block, and clears
+        // `DataQueue` every other block, since they should have been processed
+        // Returns a weight of 0
+        fn on_initialize(block_number: T::BlockNumber) -&gt; Weight
+
+        // Called at the beginning of every block to create extrinsics.
+        // - `connection_housekeeping` and `handle_dht_requests` called every block
+        // - `handle_data_requests` is called on every other block
+        // - `print_metadata` is called every 5 blocks
+        // blocks to alleviate some bandwidth and storage congestion
+        fn offchain_worker(block_number: T::BlockNumber)
+
+        /// Mark a `Multiaddr` as a desired connection target.
+        #[weight = 100_000]
+        pub fn ipfs_connect(origin, addr: Vec&lt;u8&gt;)
+
+        /// Queues a `Multiaddr` to be disconnected
+        #[weight = 500_000]
+        pub fn ipfs_disconnect(origin, addr: Vec&lt;u8&gt;)
+
+        /// Add arbitrary bytes to the IPFS repository.
+        #[weight = 200_000]
+        pub fn ipfs_add_bytes(origin, data: Vec&lt;u8&gt;)
+
+        /// Find and output IPFS data pointed to by the given `Cid`
+        #[weight = 100_000]
+        pub fn ipfs_cat_bytes(origin, cid: Vec&lt;u8&gt;)
+
+        /// Remove bytes from IPFS by `Cid`
+        #[weight = 300_000]
+        pub fn ipfs_remove_block(origin, cid: Vec&lt;u8&gt;)
+
+        /// Pins a given `Cid` non-recursively.
+        #[weight = 100_000]
+        pub fn ipfs_insert_pin(origin, cid: Vec&lt;u8&gt;)
+
+        /// Unpins a given `Cid` non-recursively.
+        #[weight = 100_000]
+        pub fn ipfs_remove_pin(origin, cid: Vec&lt;u8&gt;)
+
+        /// Find addresses associated with the given `PeerId`.
+        #[weight = 100_000]
+        pub fn ipfs_dht_find_peer(origin, peer_id: Vec&lt;u8&gt;)
+
+        /// Find the list of `PeerId`s known to be hosting the given `Cid`.
+        #[weight = 100_000]
+        pub fn ipfs_dht_find_providers(origin, cid: Vec&lt;u8&gt;)
+    }
+}
+</code></pre>
+<h3><a class="header" href="#decl_error" id="decl_error"><code>decl_error!</code></a></h3>
+<p>This is where we can define the myriad ways things can go wrong, as an enum.</p>
+<pre><code class="language-rust ignore">// The pallet's errors
+decl_error! {
+    pub enum Error for Module&lt;T: Trait&gt; {
+        CantCreateRequest,
+        RequestTimeout,
+        RequestFailed,
+    }
+}
+</code></pre>
+<p>Read on to see examples of how you can make calls to the this example pallet from your application.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="building-an-offchain-ipfs-app.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="offchain-ipfs-callables.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="building-an-offchain-ipfs-app.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="offchain-ipfs-callables.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

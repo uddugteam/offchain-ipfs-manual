@@ -95,7 +95,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">2.3.</strong> offchain::ipfs callables</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="how-it-works.html"><strong aria-hidden="true">3.1.</strong> How it works</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> In Rust</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> In JavaScript</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">4.</strong> Contributing / Development</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.2.</strong> Architectural Explanation</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="template-pallet.html"><strong aria-hidden="true">3.1.</strong> Example Pallet</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">3.1.1.</strong> Callables reference</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> Rust clients</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> JavaScript clients</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">4.</strong> Contributing / Development</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.2.</strong> Architectural Explanation</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -280,45 +280,365 @@ output and information.</p>
 <p>This demo is based on our included <code>templateModule</code> pallet - mostly meant as a showcase
 of the embedded [Rust IPFS] node. In the next section we will walk you through this pallet,
 which will be instructive as a reference implementation.</p>
-<h1><a class="header" href="#offchainipfs-callables" id="offchainipfs-callables">offchain::ipfs callables</a></h1>
-<p>The following callables are available to you. These were chosen due to popularity and to try
-and give substrate uses the most cohesive and familiar experience using IPFS within their node.</p>
+<h1><a class="header" href="#building-an-offchainipfs-app" id="building-an-offchainipfs-app">Building an <code>offchain::ipfs</code> app</a></h1>
+<p>In this section we’ll cover the essentials on what you'll need to start building your
+application with <code>offchain::ipfs</code>. We do so by way of:</p>
+<ol>
+<li>Walking you through the example Substrate pallet that's included with <code>offchain::ipfs</code></li>
+<li>Providing example code from two Rust clients (<code>substrate-subxt</code> and
+<code>substrat-api-client</code>), and one JavaScript client (<code>polkadot.js</code>).</li>
+</ol>
+<p>We expect feedback on this pallet, but also we hope that the reference implementation will inspire
+builders to create their own pallets, expose their own JSON-RPC endpoints, and call them from
+their applications similarly.</p>
+<h2><a class="header" href="#how-it-all-works" id="how-it-all-works">How it all works</a></h2>
+<p>It helps, first, to have a basic understanding of how a request flows from a user of your
+application, through the Substrate offchain-worker, to the native runtime, over to IPFS,
+and then all the way back up to your application again.</p>
+<ol>
+<li>Once the chain is initialized or blocks are synced, the embedded Rust IPFS
+node is launched and connected to the offchain worker runtime. It will stay running
+in the background.</li>
+<li>The user makes a JSON-RPC call to submit an extrinsic to the node's runtime, using
+the callable functions exposed from the custom pallet.</li>
+<li>The request is added to the relevant queue in the Substrate storage database.
+This is also defined in the custom pallet.</li>
+<li>Upon import of specified blocks, the node's runtime passes the requests from the queues to an
+offchain worker.</li>
+<li>The offchain worker relays the desired requests to the Rust IPFS node, and
+the node returns futures resolving to results</li>
+<li>The offchain worker registers the results and relays them to the substrate
+runtime, which processes them and acts upon them as specified in the custom pallet.</li>
+<li>The offchain worker stops running</li>
+</ol>
+<h1><a class="header" href="#example-pallet" id="example-pallet">Example Pallet</a></h1>
+<p><code>offchain::ipfs</code> comes with a showcase <strong><a href="https://substrate.dev/docs/en/knowledgebase/runtime/pallets">pallet</a></strong>, which is essentially a Rust module that
+complies with the requirements to be included within a substrate <strong>runtime</strong>.</p>
+<blockquote>
+<p><strong>This pallet is meant only as an example.</strong> We're including it to be helpful for future pallet authors
+that want to use the embedded native IPFS node to suit their needs.</p>
+</blockquote>
+<p>If you're familiar with Substrate and the Framework for Runtime Aggregation of Modularized Entities
+(FRAME), you can simply view the <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs_bleeding_edge/bin/node-template/pallets/template/src/lib.rs">source code</a> for this pallet. Otherwise, read on as we go through
+the code step by step.</p>
+<p>Please note the order in which these concepts are explained here is not necessarily the order that
+they appear in the code.</p>
+<p>You can also learn more by following the <a href="https://substrate.dev/docs/en/tutorials/build-a-dapp/pallet">Building a Custom Pallet</a> tutorial.</p>
+<h2><a class="header" href="#prelude" id="prelude">Prelude</a></h2>
+<p>We start by using items from the native runtime. Our pallet is <code>no_std</code> since we're targeting <code>Wasm</code></p>
+<pre><code class="language-rust ignore">#![cfg_attr(not(feature = &quot;std&quot;), no_std)]
+// ...
+use sp_core::offchain::{
+  Duration, IpfsRequest, IpfsResponse, OpaqueMultiaddr, Timestamp
+};
+// ...
+use sp_runtime::offchain::ipfs;
+</code></pre>
+<h2><a class="header" href="#command-types" id="command-types">Command Types</a></h2>
+<p>When your JSON-RPC calls are received by the pallet, the requests are
+expressed as <code>___Command</code> enums and stored in the off-chain worker storage as
+a queue, to be ingested by your native runtime and passed to IPFS.</p>
+<p>Derive attributes are omitted.</p>
+<pre><code class="language-rust ignore">// Commands involved in peer-to-peer connections
+enum ConnectionCommand {
+    ConnectTo(OpaqueMultiaddr),
+    DisconnectFrom(OpaqueMultiaddr),
+}
+
+// Commands that add, remove, pin, unpin, and output data
+enum DataCommand {
+    AddBytes(Vec&lt;u8&gt;),
+    CatBytes(Vec&lt;u8&gt;),
+    InsertPin(Vec&lt;u8&gt;),
+    RemoveBlock(Vec&lt;u8&gt;),
+    RemovePin(Vec&lt;u8&gt;),
+}
+
+// Commands that query the distributed hash table (DHT)
+// for peers and content
+enum DhtCommand {
+    FindPeer(Vec&lt;u8&gt;),
+    GetProviders(Vec&lt;u8&gt;),
+}
+</code></pre>
+<h2><a class="header" href="#the-runtime-configuration-trait" id="the-runtime-configuration-trait">The runtime configuration trait</a></h2>
+<p>The <code>system::Trait</code> trait (not to be confused with the Rust <code>trait</code> keyword), allows you to define
+which capabilities from the runtime you want to include, and how you want to use them. You can also
+&quot;tightly couple&quot; your pallet to other pallets by adding their <code>Trait</code>s to your pallet's
+inherited trait list.</p>
+<p>Here, however, we keep things simple by:</p>
+<ol>
+<li>Loosely coupling this pallet by leaving out inherited traits</li>
+<li>Including only the required <code>Event</code> type</li>
+</ol>
+<pre><code class="language-rust ignore">/// The pallet's configuration trait.
+pub trait Trait: system::Trait { // Use traits here to tightly couple to runtime
+    /// The overarching event type.
+    type Event: From&lt;Event&lt;Self&gt;&gt; + Into&lt;&lt;Self as system::Trait&gt;::Event&gt;;
+}
+</code></pre>
+<p>Later in the code, we implement some helper functions on the <code>Module</code> struct. The function
+bodies are omitted for brevity's sake.</p>
+<pre><code class="language-rust ignore">impl&lt;T: Trait&gt; Module&lt;T&gt; {
+    // &quot;Sends&quot; a request to the local IPFS node by adding it to the offchain storage
+    fn ipfs_request(req: IpfsRequest, deadline: impl Into&lt;Option&lt;Timestamp&gt;&gt;)
+      -&gt; Result&lt;IpfsResponse, Error&lt;T&gt;&gt;
+
+    // Reads from the `ConnectionQueue` and connects / disconnects
+    // from desired / undesired peers, respectively
+    fn connection_housekeeping() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+
+    // Reads `FindPeer` and `GetProviders` commands from the `DhtQueue`,
+    // and requests their execution from the native runtime
+    fn handle_dht_requests() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+
+    // Reads `AddBytes`, `CatBytes`, `DataCommand`, `RemoveBlock`, `InsertPin`,
+    // and `RemovePin` commands from the `DataQueue` and requests their
+    // execution from the native runtime.
+    fn handle_data_requests() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+
+    // Logs metadata (the number of connected peers) to the console at the DEBUG log level
+    fn print_metadata() -&gt; Result&lt;(), Error&lt;T&gt;&gt;
+</code></pre>
+<h2><a class="header" href="#the-decl_-macros" id="the-decl_-macros">The <code>decl_</code> macros</a></h2>
+<p>Pallets included in Substrate runtimes must adhere to the conventions of <a href="https://substrate.dev/docs/en/knowledgebase/runtime/frame">FRAME</a>.
+In practice, this means you must implement <code>decl_</code> macros:</p>
 <ul>
-<li>api.tx.templateModule.ipfsAddBytes - add the given bytes to the IPFS repository; the off-chain
-worker interval for this activity is every block with an odd BlockNumber (i.e. every other
-block). For example adding 1234 gives you the CID QmU1f6ngsoHvwtViihzLQPXCA8j3sagmvY9GJJDY7Ao7Aa</li>
-<li>api.tx.templateModule.ipfsCatBytes - display the bytes (UTF-8 is displayed as a string, while
-non-UTF-8 bytes are displayed in their hexadecimal representation) with the given Cid;
-the off-chain worker interval for this activity is also every block with an odd BlockNumber.
-In the inverse of the last item, requesting the CID above will return 1234</li>
-<li>api.tx.templateModule.ipfsConnect - connect to the given Multiaddr; the off-chain worker
-interval for this activity is every block (the queue of connection requests is processed with
-every block in the chain). Try it with
-/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ.</li>
-<li>api.tx.templateModule.ipfsDisconnect - disconnect from the given Multiaddr; the off-chain worker
-interval for this activity is also every block. You can try disconnecting from multiaddr from the
-previous item.</li>
-<li>api.tx.templateModule.ipfsDhtFindPeer - perform a search for the addresses associated with the
-provided PeerId; the off-chain worker interval for this activity is every block. If you use the
-peerID from two items prior, QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ, it will return
-/ip4/104.131.131.82/tcp/4001.</li>
-<li>api.tx.templateModule.ipfsDhtFindProviders - search for PeerIds known to be providing the given
-Cid; the off-chain worker interval for this activity is every block. Try it with the hash of the
-IPFS CID Inspector, QmY7Yh4UquoXHLPFo2XbhXkhBvFoPwmQUSa92pxnxjQuPU. Make sure you’re connected to
-at least one peer though!</li>
-<li>api.tx.templateModule.ipfsInsertPin - pin a block with the specified Cid, making it persistent;
-a pinned block can’t be removed. Try pinning the 1234 CID above:
-QmU1f6ngsoHvwtViihzLQPXCA8j3sagmvY9GJJDY7Ao7Aa</li>
-<li>api.tx.templateModule.ipfsRemovePin - remove a pin from a block, i.e. unpin it, so that it is
-no longer persistent and can be removed too. Trey removing the pin from the previous item.</li>
-<li>api.tx.templateModule.ipfsRemoveBlock - remove a block from the node’s repository</li>
+<li><code>decl_module!</code></li>
+<li><code>decl_event!</code></li>
+<li><code>decl_storage!</code></li>
+<li><code>decl_error!</code></li>
 </ul>
-<h1><a class="header" href="#building-an-offchainipfs-app" id="building-an-offchainipfs-app">Building an offchain::ipfs app</a></h1>
-<p>In this book we’ll cover the bare essentials on what you need to start building out your dApp
-with offchain::ipfs. We cover two Rust clients and one JavaScript client, but there are
-many other clients in other languages.</p>
-<h1><a class="header" href="#how-it-works" id="how-it-works">How it works</a></h1>
-<p>TODO</p>
+<h3><a class="header" href="#decl_storage" id="decl_storage"><code>decl_storage!</code></a></h3>
+<p>Here, we define the data that will actually be stored on-chain when calling <strong>extrinsics</strong>.</p>
+<p>Since the offchain-worker can't perform I/O outside of the wasm context, we store our requests as
+queues, to be processed on a periodic basis, consumed, and ultimately performed by the native
+runtime.</p>
+<p>This is where we use the <code>ConnectionQueue</code>, <code>DataQueue</code>, and <code>DhtQueue</code> command types from above.</p>
+<pre><code class="language-rust ignore">// This pallet's storage items.
+decl_storage! {
+    trait Store for Module&lt;T: Trait&gt; as TemplateModule {
+        // A list of addresses to connect to and disconnect from.
+        pub ConnectionQueue: Vec&lt;ConnectionCommand&gt;;
+        // A queue of data to publish or obtain on IPFS.
+        pub DataQueue: Vec&lt;DataCommand&gt;;
+        // A list of requests to the DHT.
+        pub DhtQueue: Vec&lt;DhtCommand&gt;;
+    }
+}
+</code></pre>
+<h3><a class="header" href="#decl_event" id="decl_event"><code>decl_event!</code></a></h3>
+<p>This is where we define what those events are and what they contain.</p>
+<p>Once a command is sent to the off-chain worker, one of the following chain events is emitted.</p>
+<pre><code class="language-rust ignore">// The pallet's events
+decl_event!(
+    pub enum Event&lt;T&gt; where AccountId = &lt;T as system::Trait&gt;::AccountId {
+        ConnectionRequested(AccountId),
+        DisconnectRequested(AccountId),
+        QueuedDataToAdd(AccountId),
+        QueuedDataToCat(AccountId),
+        QueuedDataToPin(AccountId),
+        QueuedDataToRemove(AccountId),
+        QueuedDataToUnpin(AccountId),
+        FindPeerIssued(AccountId),
+        FindProvidersIssued(AccountId),
+    }
+);
+</code></pre>
+<h3><a class="header" href="#decl_module" id="decl_module"><code>decl_module!</code></a></h3>
+<p>This section, perhaps the most critical section of any given pallet, is where you can define
+functions that are exposed via JSON-RPC to client libraries and, by proxy, your users.</p>
+<p>In practice, the bulk of what these functions do is to modify the <code>DataQueue</code>, <code>DhtQueue</code>, and
+<code>ConnectionQueue</code> storage objects by pushing signed command requests to their respective queues.</p>
+<p>Some default types in the functions are omitted, but we've kept the <code>#[weight]</code> attributes around.</p>
+<blockquote>
+<p>The Substrate docs define one unit of weight as &quot;one picosecond of execution time on
+fixed reference hardware.&quot; These are essentially <em>time limits</em> for block creation, and can be
+(indirectly) mapped to transaction fees analogous to something like &quot;gas fees.&quot; Read more about
+<a href="https://substrate.dev/docs/en/knowledgebase/learn-substrate/weight">weights</a> if you're curious.</p>
+</blockquote>
+<pre><code class="language-rust ignore">// The pallet's dispatchable functions.
+decl_module! {
+    /// The module declaration.
+    pub struct Module&lt;T: Trait&gt; for enum Call where origin: T::Origin {
+        // Called at the beginning of every block before any extrinsics. Clears
+        // `ConnectionQueue` and `DhtQueue` values every block, and clears
+        // `DataQueue` every other block, since they should have been processed
+        // Returns a weight of 0
+        fn on_initialize(block_number: T::BlockNumber) -&gt; Weight
+
+        // Called at the beginning of every block to create extrinsics.
+        // - `connection_housekeeping` and `handle_dht_requests` called every block
+        // - `handle_data_requests` is called on every other block
+        // - `print_metadata` is called every 5 blocks
+        // blocks to alleviate some bandwidth and storage congestion
+        fn offchain_worker(block_number: T::BlockNumber)
+
+        /// Mark a `Multiaddr` as a desired connection target.
+        #[weight = 100_000]
+        pub fn ipfs_connect(origin, addr: Vec&lt;u8&gt;)
+
+        /// Queues a `Multiaddr` to be disconnected
+        #[weight = 500_000]
+        pub fn ipfs_disconnect(origin, addr: Vec&lt;u8&gt;)
+
+        /// Add arbitrary bytes to the IPFS repository.
+        #[weight = 200_000]
+        pub fn ipfs_add_bytes(origin, data: Vec&lt;u8&gt;)
+
+        /// Find and output IPFS data pointed to by the given `Cid`
+        #[weight = 100_000]
+        pub fn ipfs_cat_bytes(origin, cid: Vec&lt;u8&gt;)
+
+        /// Remove bytes from IPFS by `Cid`
+        #[weight = 300_000]
+        pub fn ipfs_remove_block(origin, cid: Vec&lt;u8&gt;)
+
+        /// Pins a given `Cid` non-recursively.
+        #[weight = 100_000]
+        pub fn ipfs_insert_pin(origin, cid: Vec&lt;u8&gt;)
+
+        /// Unpins a given `Cid` non-recursively.
+        #[weight = 100_000]
+        pub fn ipfs_remove_pin(origin, cid: Vec&lt;u8&gt;)
+
+        /// Find addresses associated with the given `PeerId`.
+        #[weight = 100_000]
+        pub fn ipfs_dht_find_peer(origin, peer_id: Vec&lt;u8&gt;)
+
+        /// Find the list of `PeerId`s known to be hosting the given `Cid`.
+        #[weight = 100_000]
+        pub fn ipfs_dht_find_providers(origin, cid: Vec&lt;u8&gt;)
+    }
+}
+</code></pre>
+<h3><a class="header" href="#decl_error" id="decl_error"><code>decl_error!</code></a></h3>
+<p>This is where we can define the myriad ways things can go wrong, as an enum.</p>
+<pre><code class="language-rust ignore">// The pallet's errors
+decl_error! {
+    pub enum Error for Module&lt;T: Trait&gt; {
+        CantCreateRequest,
+        RequestTimeout,
+        RequestFailed,
+    }
+}
+</code></pre>
+<p>Read on to see examples of how you can make calls to the this example pallet from your application.</p>
+<h1><a class="header" href="#example-pallet-callable-reference" id="example-pallet-callable-reference">Example pallet callable reference</a></h1>
+<p>The following callable functions are exposed via JSON-RPC by the example pallet.
+These specific functions were chosen due to popularity, to give you a familiar experience.</p>
+<p>These functions are not the only ones available in the native runtime, and therefore
+do not represent the full extent of functionality available to you.</p>
+<p>Regardless, we still detail the example template functions here as a helpful reference. If you have
+feedback about these existing functions, or would like to request new functions, please open an issue
+at <a href="https://github.com/rs-ipfs/substrate">rs-ipfs/substrate</a>.</p>
+<h2><a class="header" href="#callables" id="callables">Callables</a></h2>
+<p>What follows is a list of callables, their frequency in terms of block creation, their weights,
+their arguments and return values. As explained in the section on the example pallet,
+weights are essentially picosecond representations of a time limit for a given transaction,
+and can be loosely correlated to transaction fees.</p>
+<blockquote>
+<p><strong>Rust's <code>snake_case</code> is used here.</strong> However, as you'll see in the upcoming polkadot.js example,
+JavaScript will use <code>camelCase</code> for function and variable names. Generally, the exposed JSON-RPC
+functions will adhere to the conventions of the programming language that the client code is
+written in.</p>
+</blockquote>
+<p>Also, the weights here and block frequencies here are chosen rather arbitrarily without tokenomics
+in mind. You will probably need to tune these values in your own custom pallet.</p>
+<p>Finally, while we list &quot;return&quot; values for simplicity's sake, the template pallet does not actually
+return any values from the RPC calls. What this really means in the context of Substrate is that the
+values will be <em>eventually</em> emitted returned in the runtime logs, which you'll need to monitor.</p>
+<h3><a class="header" href="#ipfs_add_bytes" id="ipfs_add_bytes"><code>ipfs_add_bytes</code></a></h3>
+<p>Adds the given bytes to the IPFS repository.</p>
+<p><strong>Frequency:</strong> Every other block<br />
+<strong>Weight</strong>: 200,000<br /></p>
+<h4><a class="header" href="#arguments" id="arguments">Arguments</a></h4>
+<ul>
+<li><code>bytes</code> - The bytes that you want to add to IPFS, e.g. <code>vec![1, 2, 3, 4]</code> or <code>b&quot;1234&quot;</code></li>
+</ul>
+<h4><a class="header" href="#returns" id="returns">Returns</a></h4>
+<p>A Content ID (CID) string, e.g. <code>QmU1f6ngsoHvwtViihzLQPXCA8j3sagmvY9GJJDY7Ao7Aa</code></p>
+<h3><a class="header" href="#ipfs_cat_bytes" id="ipfs_cat_bytes"><code>ipfs_cat_bytes</code></a></h3>
+<p>Displays the bytes behind a given CID.</p>
+<p><strong>Frequency:</strong> Every other block<br />
+<strong>Weight</strong>: 100,000</p>
+<h4><a class="header" href="#arguments-1" id="arguments-1">Arguments</a></h4>
+<ul>
+<li><code>cid</code>: The CID of your desired content, e.g. <code>QmY7Yh4UquoXHLPFo2XbhXkhBvFoPwmQUSa92pxnxjQuPU</code></li>
+</ul>
+<h4><a class="header" href="#returns-1" id="returns-1">Returns</a></h4>
+<p>The requested bytes - UTF-8 as a string, non-UTF-8 as hexidecimal string</p>
+<h3><a class="header" href="#ipfs_connect" id="ipfs_connect"><code>ipfs_connect</code></a></h3>
+<p>Connects the embedded node to the given Multiaddr.</p>
+<p><strong>Frequency:</strong> Every block<br />
+<strong>Weight</strong>: 100,000</p>
+<h4><a class="header" href="#arguments-2" id="arguments-2">Arguments</a></h4>
+<ul>
+<li><code>multiaddr</code>: A valid multiaddress with peer ID a the end, e.g. <code>/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ</code></li>
+</ul>
+<h4><a class="header" href="#returns-2" id="returns-2">Returns</a></h4>
+<p>Nothing, or an error.</p>
+<h3><a class="header" href="#ipfs_disconnect" id="ipfs_disconnect"><code>ipfs_disconnect</code></a></h3>
+<p>Disconnects from the given Multiaddr.</p>
+<p><strong>Frequency:</strong> Every block<br />
+<strong>Weight</strong>: 500,000</p>
+<h4><a class="header" href="#arguments-3" id="arguments-3">Arguments</a></h4>
+<ul>
+<li><code>multiaddr</code>: A valid multiaddress with peer ID a the end, e.g. <code>/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ</code></li>
+</ul>
+<h4><a class="header" href="#returns-3" id="returns-3">Returns</a></h4>
+<p>Nothing, or an error.</p>
+<h3><a class="header" href="#ipfs_dht_findpeer" id="ipfs_dht_findpeer"><code>ipfs_dht_findpeer</code></a></h3>
+<p>Performs a search for the addresses associated with the provided PeerId.</p>
+<p><strong>Frequency:</strong> Every block<br />
+<strong>Weight</strong>: 100,000</p>
+<h4><a class="header" href="#arguments-4" id="arguments-4">Arguments</a></h4>
+<ul>
+<li><code>peerID</code>: A <code>PeerId</code> hash, e.g. <code>QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ</code></li>
+</ul>
+<h4><a class="header" href="#returns-4" id="returns-4">Returns</a></h4>
+<p>A multiaddr, such as <code>/ip4/104.131.131.82/tcp/4001</code>.</p>
+<h3><a class="header" href="#ipfs_dht_findproviders" id="ipfs_dht_findproviders"><code>ipfs_dht_findproviders</code></a></h3>
+<p>Search for PeerIds known to be providing the given Cid. You must be connected to at least one peer.</p>
+<p><strong>Frequency:</strong> Every block<br />
+<strong>Weight</strong>: 100,000</p>
+<h4><a class="header" href="#arguments-5" id="arguments-5">Arguments</a></h4>
+<ul>
+<li><code>cid</code>: The CID of your desired content, e.g. <code>QmY7Yh4UquoXHLPFo2XbhXkhBvFoPwmQUSa92pxnxjQuPU</code></li>
+</ul>
+<h4><a class="header" href="#returns-5" id="returns-5">Returns</a></h4>
+<ul>
+<li><code>peerID</code>: An array <code>PeerId</code> string, e.g. <code>[QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ]</code></li>
+</ul>
+<h3><a class="header" href="#ipfs_insert_pin" id="ipfs_insert_pin"><code>ipfs_insert_pin</code></a></h3>
+<p>Non-recursively pins a block with the specified Cid, protecting it from removal.</p>
+<p><strong>Frequency:</strong> Every other block<br />
+<strong>Weight</strong>: 100,000</p>
+<h4><a class="header" href="#arguments-6" id="arguments-6">Arguments</a></h4>
+<ul>
+<li><code>cid</code>: The CID of the data you want to pin, e.g. <code>QmU1f6ngsoHvwtViihzLQPXCA8j3sagmvY9GJJDY7Ao7Aa</code></li>
+</ul>
+<h4><a class="header" href="#returns-6" id="returns-6">Returns</a></h4>
+<p>Nothing, or an error.</p>
+<h3><a class="header" href="#ipfs_remove_pin" id="ipfs_remove_pin"><code>ipfs_remove_pin</code></a></h3>
+<p>Removes a pin from a block, so that it is no longer persistent and can be removed.</p>
+<p><strong>Frequency:</strong> Every other block<br />
+<strong>Weight</strong>: 100,000</p>
+<h4><a class="header" href="#arguments-7" id="arguments-7">Arguments</a></h4>
+<ul>
+<li><code>cid</code>: The CID of the data you want to unpin, e.g. <code>QmU1f6ngsoHvwtViihzLQPXCA8j3sagmvY9GJJDY7Ao7Aa</code></li>
+</ul>
+<h4><a class="header" href="#returns-7" id="returns-7">Returns</a></h4>
+<h3><a class="header" href="#ipfs_remove_block" id="ipfs_remove_block"><code>ipfs_remove_block</code></a></h3>
+<p>Removes a block from the node’s repository.</p>
+<p><strong>Frequency:</strong> Every other block<br />
+<strong>Weight</strong>: 300,000</p>
+<h4><a class="header" href="#arguments-8" id="arguments-8">Arguments</a></h4>
+<ul>
+<li><code>cid</code>: The CID of the block you want to remove, e.g. <code>QmU1f6ngsoHvwtViihzLQPXCA8j3sagmvY9GJJDY7Ao7Aa</code></li>
+</ul>
+<h4><a class="header" href="#returns-8" id="returns-8">Returns</a></h4>
+<p>Nothing, or an error.</p>
 <h1><a class="header" href="#using-offchainipfs-from-your-rust-code" id="using-offchainipfs-from-your-rust-code">Using <code>offchain::ipfs</code> from your Rust code</a></h1>
 <h2><a class="header" href="#with-substrate-subxt" id="with-substrate-subxt">With <code>substrate-subxt</code></a></h2>
 <p>In your Cargo.toml file</p>

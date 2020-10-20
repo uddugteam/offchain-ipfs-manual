@@ -93,7 +93,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">2.3.</strong> offchain::ipfs callables</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html" class="active"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="how-it-works.html"><strong aria-hidden="true">3.1.</strong> How it works</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> In Rust</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> In JavaScript</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">4.</strong> Contributing / Development</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.2.</strong> Architectural Explanation</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html" class="active"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="template-pallet.html"><strong aria-hidden="true">3.1.</strong> Example Pallet</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">3.1.1.</strong> Callables reference</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> Rust clients</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> JavaScript clients</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">4.</strong> Contributing / Development</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.2.</strong> Architectural Explanation</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -159,23 +159,50 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#building-an-offchainipfs-app" id="building-an-offchainipfs-app">Building an offchain::ipfs app</a></h1>
-<p>In this book we’ll cover the bare essentials on what you need to start building out your dApp
-with offchain::ipfs. We cover two Rust clients and one JavaScript client, but there are
-many other clients in other languages.</p>
+                        <h1><a class="header" href="#building-an-offchainipfs-app" id="building-an-offchainipfs-app">Building an <code>offchain::ipfs</code> app</a></h1>
+<p>In this section we’ll cover the essentials on what you'll need to start building your
+application with <code>offchain::ipfs</code>. We do so by way of:</p>
+<ol>
+<li>Walking you through the example Substrate pallet that's included with <code>offchain::ipfs</code></li>
+<li>Providing example code from two Rust clients (<code>substrate-subxt</code> and
+<code>substrat-api-client</code>), and one JavaScript client (<code>polkadot.js</code>).</li>
+</ol>
+<p>We expect feedback on this pallet, but also we hope that the reference implementation will inspire
+builders to create their own pallets, expose their own JSON-RPC endpoints, and call them from
+their applications similarly.</p>
+<h2><a class="header" href="#how-it-all-works" id="how-it-all-works">How it all works</a></h2>
+<p>It helps, first, to have a basic understanding of how a request flows from a user of your
+application, through the Substrate offchain-worker, to the native runtime, over to IPFS,
+and then all the way back up to your application again.</p>
+<ol>
+<li>Once the chain is initialized or blocks are synced, the embedded Rust IPFS
+node is launched and connected to the offchain worker runtime. It will stay running
+in the background.</li>
+<li>The user makes a JSON-RPC call to submit an extrinsic to the node's runtime, using
+the callable functions exposed from the custom pallet.</li>
+<li>The request is added to the relevant queue in the Substrate storage database.
+This is also defined in the custom pallet.</li>
+<li>Upon import of specified blocks, the node's runtime passes the requests from the queues to an
+offchain worker.</li>
+<li>The offchain worker relays the desired requests to the Rust IPFS node, and
+the node returns futures resolving to results</li>
+<li>The offchain worker registers the results and relays them to the substrate
+runtime, which processes them and acts upon them as specified in the custom pallet.</li>
+<li>The offchain worker stops running</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="offchain-ipfs-callables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="previewing-functionality.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="how-it-works.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="template-pallet.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -187,13 +214,13 @@ many other clients in other languages.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="offchain-ipfs-callables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="previewing-functionality.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="how-it-works.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="template-pallet.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
