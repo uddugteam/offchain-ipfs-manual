@@ -644,14 +644,15 @@ values will be <em>eventually</em> emitted returned in the runtime logs, which y
 <p>In your Cargo.toml file</p>
 <!-- markdownlint-disable MD013 --> <!-- long line for codec include -->
 <pre><code class="language-toml">[dependencies]
-async-std = { version = &quot;1.6.4&quot;, features = [&quot;attributes&quot;] }
 codec = { package = &quot;parity-scale-codec&quot;, version = &quot;1.3.5&quot;, default-features = false, features = [&quot;derive&quot;] }
 substrate-subxt = &quot;0.13.0&quot;
 sp-keyring = { version = &quot;2.0.0&quot;, default-features = false }
+async-std = { version = &quot;1.6.4&quot;, features = [&quot;attributes&quot;] }
+
 </code></pre>
 <!-- markdownlint-restore -->
 <p>Then in your main.rs:</p>
-<pre><pre class="playground"><code class="language-rust">use codec::Encode;
+<pre><code class="language-rust no_run noplayground">use codec::Encode;
 use sp_keyring::AccountKeyring;
 use substrate_subxt::{Call, ClientBuilder, EventsDecoder, NodeTemplateRuntime, PairSigner};
 
@@ -663,19 +664,14 @@ async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     let client = ClientBuilder::&lt;NodeTemplateRuntime&gt;::new().build().await?;
 
     // Example CID for the example bytes added vec![1, 2, 3, 4]
-    let cid = String::from(&quot;QmRgctVSR8hvGRDLv7c5H7BCji7m1VXRfEE1vW78CFagD7&quot;)
-        .into_bytes()
-        .to_vec();
+    let cid = String::from(&quot;QmRgctVSR8hvGRDLv7c5H7BCji7m1VXRfEE1vW78CFagD7&quot;).into_bytes();
     // Example multiaddr to connect IPFS with
     let multiaddr = String::from(
         &quot;/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ&quot;,
     )
-    .into_bytes()
-    .to_vec();
+    .into_bytes();
     // Example Peer Id
-    let peer_id = String::from(&quot;QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ&quot;)
-        .into_bytes()
-        .to_vec();
+    let peer_id = String::from(&quot;QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ&quot;).into_bytes();
 
     // Begin to submit extrinsics
     // ipfs_add_bytes
@@ -689,11 +685,11 @@ async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
         .await?;
     println!(&quot;\nResult for ipfs_add_bytes: {:?}&quot;, add_bytes);
 
-    Ok(())
-}
+    // ipfs_cat_bytes
+    let cat_bytes = client
+        .watch(CatBytesCall { cid: cid.clone() }, &amp;signer)
+        .await?;
 
-#[derive(Encode)]
-pub struct AddBytesCall {
     data: Vec&lt;u8&gt;,
 }
 
@@ -703,16 +699,20 @@ impl Call&lt;NodeTemplateRuntime&gt; for AddBytesCall {
     fn events_decoder(_decoder: &amp;mut EventsDecoder&lt;NodeTemplateRuntime&gt;) {}
 }
 
-</code></pre></pre>
+#[derive(Encode)]
+pub struct CatBytesCall {
+    cid: Vec&lt;u8&gt;,
+}
+</code></pre>
 <h3><a class="header" href="#with-substrate-api-client" id="with-substrate-api-client">With <code>substrate-api-client</code></a></h3>
 <p>In your Cargo.toml file:</p>
 <pre><code class="language-toml">[dependencies]
 substrate-api-client = { git = &quot;https://github.com/scs/substrate-api-client.git&quot; }
 sp-core = { version = &quot;2.0.0&quot;, features = [&quot;full_crypto&quot;] }
-sp-keyring = { version = &quot;2.0.0&quot;, default-features = false }
+sp-keyring = { version = &quot;2.0.0&quot;, default-features = false } 
 </code></pre>
 <p>Then in your main.rs:</p>
-<pre><pre class="playground"><code class="language-rust">use sp_core::crypto::Pair;
+<pre><code class="language-rust no_run noplayground">use sp_core::crypto::Pair;
 use sp_keyring::AccountKeyring;
 use std::{convert::TryFrom, string::String};
 use substrate_api_client::{
@@ -723,8 +723,8 @@ use substrate_api_client::{
 fn main() {
     // instantiate an Api that connects to the given address
     let url = &quot;127.0.0.1:9944&quot;;
-    // if no signer is set in the whole program, we need to give to Api a specific
-    // type instead of an associated type as during compilation the type needs to be defined.
+    // if no signer is set in the whole program, we need to give to Api a specific type instead of an associated type
+    // as during compilation the type needs to be defined.
     let signer = AccountKeyring::Bob.pair();
 
     // sets up api client and retrieves the node metadata
@@ -741,17 +741,23 @@ fn main() {
     // Example bytes to add
     let bytes_to_add: Vec&lt;u8&gt; = vec![1, 2, 3, 4];
     // Example CID for the example bytes added vec![1, 2, 3, 4]
-    let cid = String::from(&quot;QmRgctVSR8hvGRDLv7c5H7BCji7m1VXRfEE1vW78CFagD7&quot;)
-        .into_bytes()
-        .to_vec();
+    let cid = String::from(&quot;QmRgctVSR8hvGRDLv7c5H7BCji7m1VXRfEE1vW78CFagD7&quot;).into_bytes();
+
+    // Example multiaddr to connect IPFS with
+    let multiaddr = String::from(
+        &quot;/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ&quot;,
+    )
+    .into_bytes();
+
+    // Example Peer Id
+    let peer_id = String::from(&quot;QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ&quot;).into_bytes();
 
     // Create input for all calls
     let calls = vec![
         (&quot;ipfs_add_bytes&quot;, bytes_to_add),
         (&quot;ipfs_cat_bytes&quot;, cid.clone()),
-    ];
-
-    // Create Extinsics and listen for all calls
+        (&quot;ipfs_connect&quot;, multiaddr.clone()),
+        (&quot;ipfs_insert_pin&quot;, cid.clone()),
     for call in calls {
         println!(&quot;\n Creating Extrinsic for {}&quot;, call.0);
         let _call = compose_call!(meta, &quot;TemplateModule&quot;, call.0, call.1);
@@ -773,8 +779,8 @@ fn main() {
         nonce += 1;
     }
 }
-</code></pre></pre>
-<p>For full demo with all pallet functions, please visit <a href="https://github.com/whalelephant/offchain_ipfs_api_clients">here</a></p>
+</code></pre>
+<p>For full demo with all pallet functions, please visit <a href="https://github.com/rs-ipfs/offchain-ipfs-manual/tree/main/code">here</a></p>
 <h1><a class="header" href="#in-javascript" id="in-javascript">In JavaScript</a></h1>
 <p>This should work in both node.js and the browser via a bundler like Webpack or Parcel.</p>
 <h2><a class="header" href="#with-polkadotjs" id="with-polkadotjs">With polkadot.js</a></h2>
