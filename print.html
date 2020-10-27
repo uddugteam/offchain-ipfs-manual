@@ -28,7 +28,9 @@
         <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/general.css">
         <link rel="stylesheet" href="css/chrome.css">
+        
         <link rel="stylesheet" href="css/print.css" media="print">
+        
 
         <!-- Fonts -->
         <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
@@ -95,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="template-pallet.html"><strong aria-hidden="true">3.1.</strong> Example Pallet</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">3.1.1.</strong> Callables reference</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> Rust clients</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> JavaScript clients</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.</strong> Architectural Explanation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">5.</strong> Contributing / Development</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="using-the-docker-image.html"><strong aria-hidden="true">2.1.</strong> Using the Docker image</a></li><li class="chapter-item expanded "><a href="previewing-functionality.html"><strong aria-hidden="true">2.2.</strong> Previewing the functionality with a nice UI</a></li></ol></li><li class="chapter-item expanded "><a href="building-an-offchain-ipfs-app.html"><strong aria-hidden="true">3.</strong> Building an offchain::ipfs app</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="template-pallet.html"><strong aria-hidden="true">3.1.</strong> Example Pallet</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="offchain-ipfs-callables.html"><strong aria-hidden="true">3.1.1.</strong> Callables reference</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-rust.html"><strong aria-hidden="true">3.2.</strong> Rust clients</a></li><li class="chapter-item expanded "><a href="offchain-ipfs-javascript.html"><strong aria-hidden="true">3.3.</strong> JavaScript clients</a></li></ol></li><li class="chapter-item expanded "><a href="offchain-ipfs-architecture.html"><strong aria-hidden="true">4.</strong> Architectural Explanation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="building-offchain-ipfs-source.html"><strong aria-hidden="true">4.1.</strong> Building from Source</a></li><li class="chapter-item expanded "><a href="substrate-core-modifications.html"><strong aria-hidden="true">4.2.</strong> Substrate Core Modifications</a></li></ol></li><li class="chapter-item expanded "><a href="contributing-development.html"><strong aria-hidden="true">5.</strong> Contributing / Development</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -130,9 +132,11 @@
                     <h1 class="menu-title">The offchain::ipfs Manual</h1>
 
                     <div class="right-buttons">
+                        
                         <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+                        
                         
                     </div>
                 </div>
@@ -856,26 +860,181 @@ const logEvents = ({ status, events }) =&gt; {
 <p>You will connect to the blockchain node via JSON-RPC over WebSockets., On page load it will
 connect to port 9944 via WebSockets.</p>
 <p>One good way to monitor the streaming results in the browser is to use devtools:</p>
-<h1><a class="header" href="#architectural-explanation" id="architectural-explanation">Architectural Explanation</a></h1>
-<p>TODO: How does it work?</p>
-<p>Explain this: <a href="https://github.com/rs-ipfs/substrate/commit/ee328957b3fe9d1b0c9219478af013550a900e59">https://github.com/rs-ipfs/substrate/commit/ee328957b3fe9d1b0c9219478af013550a900e59</a></p>
+<h1><a class="header" href="#the-architecture-of-offchainipfs" id="the-architecture-of-offchainipfs">The architecture of <code>offchain::ipfs</code></a></h1>
+<p>As we explained in the introduction, <code>offchain::ipfs</code> is currently a fork of
+<a href="https://github.com/paritytech/substrate"><code>paritytech/substrate</code></a> maintained by <a href="https://equilibrium.co">Equilibrium</a>.</p>
+<p>There are three branches of note:</p>
+<ul>
+<li><a href="https://github.com/rs-ipfs/substrate"><code>master</code></a> - which will always follow <code>paritytech/substrate</code> in lock-step, with no modifications</li>
+<li><a href="https://github.com/rs-ipfs/substrate/tree/offchain_ipfs"><code>offchain_ipfs</code></a> - which contains the modifications, and periodically rebases from <code>master</code></li>
+<li><a href="https://github.com/rs-ipfs/substrate/tree/offchain_ipfs_docker"><code>offchain_ipfs_docker</code></a> - rebases from <code>offchain_ipfs</code> and contains the <code>Dockerfile</code> updates</li>
+</ul>
+<p>There may be other branches at any given time for pragmatic purposes, but the three above should
+always exist and be suitable for their respective roles.</p>
+<p>In the rest of this chapter, we'll show you how to build the code in these branches, and then we'll
+take a closer look at what modifications were made to substrate to achieve <code>offchain::ipfs</code>.</p>
 <h1><a class="header" href="#building-from-source" id="building-from-source">Building from Source</a></h1>
-<h2><a class="header" href="#building-the-docker-image-from-source" id="building-the-docker-image-from-source">Building the docker image from source</a></h2>
-<pre><code class="language-bash">git clone https://github.com/rs-ipfs/substrate
-cd substrate
-docker build --file .maintain/Dockerfile --tag [your-org/]offchain-ipfs .
-</code></pre>
-<p>This is a multistage build with the target being an image with name offchain-ipfs:latest
-containing the substrate binary and the node-template binary.</p>
-<p>Note that this will take forever</p>
+<p>You can build the docker image from source, or build the binaries locally. Both of these
+can take quite a long time, even on &quot;developer&quot; hardware - particularly the docker image.</p>
 <h2><a class="header" href="#running-the-node-from-source" id="running-the-node-from-source">Running the node from source</a></h2>
 <pre><code class="language-bash">git clone https://github.com/rs-ipfs/substrate
 cd substrate
 git checkout offchain_ipfs
 cargo build --workspace
 </code></pre>
-<p>And get a coffee…</p>
-<p>Note that this will take forever, but less time than building in alpine</p>
+<h2><a class="header" href="#building-the-docker-image-from-source" id="building-the-docker-image-from-source">Building the docker image from source</a></h2>
+<p>This is a multistage build based on Alpine linux. The resulting image will contain
+the <code>substrate-ipfs</code> binary and the <code>node-template</code> binary.</p>
+<p>We suggest you supply your own tag name.</p>
+<pre><code class="language-bash">git clone https://github.com/rs-ipfs/substrate
+cd substrate
+git checkout offchain_ipfs_docker
+docker build --file .maintain/Dockerfile --tag [your-tag-here] .
+</code></pre>
+<p>Refer to the <strong><a href="./using-the-docker-image.html">Using the Docker image</a></strong> section of for information about running the image.</p>
+<p>Read on to learn about the modifications in the <code>offchain_ipfs</code> branch, and what they do.</p>
+<h1><a class="header" href="#substrate-core-modifications" id="substrate-core-modifications">Substrate core modifications</a></h1>
+<p>Every one of <code>offchain::ipfs</code>'s functional modifications to the <a href="https://github.com/paritytech/substrate"><code>paritytech/substrate</code></a> core are
+encapsulated in a single commit on the <a href="https://github.com/rs-ipfs/substrate/tree/offchain_ipfs"><code>offchain_ipfs</code></a> branch of our repo.</p>
+<p>In this section we'll walk through these modifications so that you may understand them, and
+perhaps improve upon them yourself.</p>
+<h2><a class="header" href="#how-substrate-is-organized" id="how-substrate-is-organized">How Substrate is organized</a></h2>
+<p>Substrate, as a modular framework, provides:</p>
+<ol>
+<li><strong>Clients</strong> are services that interact with the substrate blockchain, e.g. substrate full and
+light client. Offchain workers are one of those clients</li>
+<li>Basic <strong>primitives</strong> to compose a blockchain with your desired features</li>
+<li>Several <strong>binaries</strong>, both necessary and optional, that you can run or build from source</li>
+</ol>
+<p>There's definitely a lot more to Substrate, but for the purposes of this explanation we'll only
+cover the parts that <code>offchain::ipfs</code> augments. At a very high level, we modeled this implementation
+after the existing <a href="https://github.com/paritytech/substrate/blob/master/client/offchain/src/api/http.rs"><code>offchain::http</code></a> module. You can look that over to get a sense of how it all
+works, or read on for more detail.</p>
+<p>From here on, most of the links will be to code points within the <a href="https://github.com/rs-ipfs/substrate/tree/offchain_ipfs"><code>offchain_ipfs</code></a> branch of the
+<code>offchain::ipfs</code> repo.</p>
+<h2><a class="header" href="#offchainipfs-lifecycle" id="offchainipfs-lifecycle"><code>offchain::ipfs</code> lifecycle</a></h2>
+<ol>
+<li>
+<p>User runs one of the binaries, <a href="https://github.com/rs-ipfs/substrate/tree/offchain_ipfs_docker/bin/node/cli"><code>node</code></a>, or <a href="https://github.com/rs-ipfs/substrate/tree/offchain_ipfs_docker/bin/node-template"><code>node-template</code></a> which launches a Substrate runtime.</p>
+</li>
+<li>
+<p>If the offchain worker is enabled in the configuration, a secondary runtime will start in both
+the <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs_docker/client/service/src/builder.rs#L266">full client</a> and <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs_docker/client/service/src/builder.rs#L333">light client</a> to power the IPFS node.</p>
+</li>
+<li>
+<p>The client will use <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L69"><code>IpfsApi</code></a> and <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L249"><code>IpfsWorker</code></a> to expose its functionality
+to any pallets that wish to access it, via <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs/client/offchain/src/api.rs#L189"><code>ipfs_request_start</code></a> and <a href="https://github.com/rs-ipfs/substrate/blob/offchain_ipfs/client/offchain/src/api.rs#L193"><code>ipfs_request_wait</code></a>.
+These calls will utilize the types explained below.</p>
+</li>
+<li>
+<p>If your node is configured to processes user input via a pallet, then users will make requests,
+typically in the form of <strong><a href="hthttps://github.com/rs-ipfs/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L249tps://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics">extrinsics</a></strong> called via JSON-RPC. A typical successful call goes
+something like:</p>
+<ol>
+<li>The JSON-RPC server in the substrate node will recieve the call and it will be the dispatched
+to the relevant pallet.</li>
+<li>The pallet may store the calls in a queue to be handled later, or immediate create a valid
+<code>IpfsRequest</code> with the call argument(s).</li>
+<li>An Offchain Worker starts on each block import to handle the request to the IPFS node with its
+exposed APIs.</li>
+<li>When the IPFS node respond to the requests, the response is registered at the APIs as a
+<code>IpfsResponse</code>. The offchain worker stops.</li>
+<li>The response can be used to update a chain state through signed or unsigned transaction or be
+used in the rest of the call's logic.</li>
+</ol>
+</li>
+</ol>
+<h2><a class="header" href="#primitive-types" id="primitive-types">Primitive Types</a></h2>
+<p>Offchain::ipfs adds the following types used in the substrate runtime and the offchain workers. It
+is useful to explore some core types as they indicate the existing offchain::ipfs functions and
+where to modify to add new functions to interact with IPFS.</p>
+<blockquote>
+<p><strong>Development Tip:</strong></p>
+<p>In fact, you can let the <code>rustc</code> do a lot of work for you! By simply adding, changing, or
+removing types from the following enums, you will get helpful errors telling you where else you
+need to change your code to satisfy the compiler.</p>
+</blockquote>
+<h3><a class="header" href="#ipfsrequest" id="ipfsrequest"><code>IpfsRequest</code></a></h3>
+<p>An enum that represents a request to the IPFS node.</p>
+<ul>
+<li><code>Addrs</code> - Get the list of node's peerIds and addresses.</li>
+<li><code>AddBytes(Vec&amp;lt;u8&amp;gt;)</code> - Add the given bytes to the IPFS repo</li>
+<li><code>AddListeningAddr(OpaqueMultiaddr)</code> - Add an address to listen on.</li>
+<li><code>BitswapStats</code> - Get the bitswap stats of the node.</li>
+<li><code>CatBytes(Vec&lt;u8&gt;)</code> - Get bytes with the given Cid from the IPFS repo and display them.</li>
+<li><code>Connect(OpaqueMultiaddr)</code> - Connect to an external IPFS node with the specified Multiaddr.</li>
+<li><code>Disconnect(OpaqueMultiaddr)</code> - Disconnect from an external IPFS node with the specified Multiaddr.</li>
+<li><code>GetBlock(Vec&lt;u8&gt;)</code> - Obtain an IPFS block.</li>
+<li><code>FindPeer(Vec&lt;u8&gt;)</code> - Find the addresses related to the given PeerId.</li>
+<li><code>GetClosestPeers(Vec&lt;u8&gt;)</code> - Get a list of PeerIds closest to the given PeerId.</li>
+<li><code>GetProviders(Vec&lt;u8&gt;)</code> - Find the providers for the given Cid.</li>
+<li><code>Identity</code> - Get the node's public key and dedicated external addresses.</li>
+<li><code>InsertPin(Vec&lt;u8&gt;, bool)</code> - Pins a given Cid recursively or directly (non-recursively)</li>
+<li><code>LocalAddrs</code> - Get the list of node's local addresses.</li>
+<li><code>LocalRefs</code> - Get the list of <code>Cid</code>s of blocks known to a node.</li>
+<li><code>Peers</code> - Obtain the list of node's peers.</li>
+<li><code>Publish</code> - Publish a given message to a topic.
+<ul>
+<li><code>topic: Vec&lt;u8&gt;</code> - The topic to publish the message to.</li>
+<li><code>message: Vec&lt;u8&gt;</code> - The message to publish.</li>
+</ul>
+</li>
+<li><code>RemoveBlock(Vec&lt;u8&gt;)</code> - Remove a block from the ipfs repo. A pinned block cannot be removed.</li>
+<li><code>RemoveListeningAddr(OpaqueMultiaddr)</code> - Remove an address that is listened on.</li>
+<li><code>RemovePin(Vec&lt;u8&gt;, bool)</code> - Unpins a given Cid recursively or only directly.</li>
+<li><code>Subscribe(Vec&lt;u8&gt;)</code> - Subscribe to a given topic.</li>
+<li><code>SubscriptionList</code> - Obtain the list of currently subscribed topics.</li>
+<li><code>Unsubscribe(Vec&lt;u8&gt;)</code> - Unsubscribe from a given topic.</li>
+</ul>
+<h3><a class="header" href="#ipfsresponse" id="ipfsresponse"><code>IpfsResponse</code></a></h3>
+<p>An enum that represents a response from the IPFS node.</p>
+<ul>
+<li><code>Addrs(Vec&lt;(Vec&lt;u8&gt;, Vec&lt;OpaqueMultiaddr&gt;)&gt;)</code> - A list of pairs of node's peers and
+their known addresses.</li>
+<li><code>AddBytes(Vec&lt;u8&gt;)</code> - The Cid of the added bytes.</li>
+<li><code>BitswapStats</code> - A collection of node stats related to the bitswap protocol.
+<ul>
+<li><code>blocks_sent: u64</code> - The number of blocks sent.</li>
+<li><code>data_sent: u64</code> - The number of bytes sent.</li>
+<li><code>blocks_received: u64</code> - The number of blocks received.</li>
+<li><code>data_received: u64</code> - The number of bytes received.</li>
+<li><code>dup_blks_received: u64</code> - The number of duplicate blocks received.</li>
+<li><code>dup_data_received: u64</code> - The number of duplicate bytes received.</li>
+<li><code>peers: Vec&lt;Vec&lt;u8&gt;&gt;</code> - The list of peers.</li>
+<li><code>wantlist: Vec&lt;(Vec&lt;u8&gt;, i32)&gt;</code> - The list of wanted CIDs and their bitswap priorities.</li>
+</ul>
+</li>
+<li><code>CatBytes(Vec&lt;u8&gt;)</code> - The data received from IPFS.</li>
+<li><code>FindPeer(Vec&lt;OpaqueMultiaddr&gt;)</code> - A list of addresses known to be related to a PeerId.</li>
+<li><code>GetClosestPeers(Vec&lt;Vec&lt;u8&gt;&gt;)</code> - The list of PeerIds closest to the given PeerId.</li>
+<li><code>GetProviders(Vec&lt;Vec&lt;u8&gt;&gt;)</code> - A list of PeerIds known to provide the given Cid.</li>
+<li><code>Identity(Vec&lt;u8&gt;, Vec&lt;OpaqueMultiaddr&gt;)</code> - The local node's public key and the externally
+visible and listened to addresses.</li>
+<li><code>LocalAddrs(Vec&lt;OpaqueMultiaddr&gt;)</code> - A list of local node's externally visible and listened to addresses.</li>
+<li><code>LocalRefs(Vec&lt;Vec&lt;u8&gt;&gt;)</code> - A list of locally available blocks by their Cids.</li>
+<li><code>Peers(Vec&lt;OpaqueMultiaddr&gt;)</code> - The list of currently connected peers.</li>
+<li><code>RemoveBlock(Vec&lt;u8&gt;)</code> - The Cid of the removed block.</li>
+<li><code>Success</code> - A request was processed successfully and there is no extra value to return.</li>
+</ul>
+<h3><a class="header" href="#ipfsrequeststatus" id="ipfsrequeststatus"><code>IpfsRequestStatus</code></a></h3>
+<p>An enum that represents the status of an IPFS request.</p>
+<ul>
+<li><code>DeadlineReached</code> - Deadline was reached while we waited for this request to finish.</li>
+<li><code>IoError(Vec&lt;u8&gt;)</code> - An error has occurred during the request, for example a timeout or the remote
+has closed our socket.</li>
+<li><code>Invalid</code> - The passed ID is invalid in this context.</li>
+<li><code>Finished(IpfsResponse)</code> - The request has finished successfully.</li>
+</ul>
+<h3><a class="header" href="#ipfserror" id="ipfserror"><code>IpfsError</code></a></h3>
+<p>An enum that enumerates types of errors returned from the IPFS node.</p>
+<ul>
+<li><code>DeadlineReached = 1</code> - The requested action couldn't been completed within a deadline.</li>
+<li><code>IoError = 2</code> - There was an IO Error while processing the request.</li>
+<li><code>Invalid = 3</code> - The ID of the request is invalid in this context.</li>
+</ul>
+<p>We hope this has been a helpful overview of the core modifications that we made to Substrate in
+order to enable embedded IPFS functionality. If you have questions, or if you're ready to jump in
+and contribute, or if you're ready to build your own <code>offchain::ipfs</code>-powered dApp, read on.</p>
 <h1><a class="header" href="#contributing--development" id="contributing--development">Contributing / Development</a></h1>
 <p>There are several ways that people can help <code>offchain::ipfs</code>.</p>
 <h2><a class="header" href="#create-a-dapp-or-a-custom-substrate-pallet-and-tell-us-about-it" id="create-a-dapp-or-a-custom-substrate-pallet-and-tell-us-about-it">Create a dApp or a custom Substrate pallet, and tell us about it</a></h2>
