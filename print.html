@@ -167,7 +167,11 @@
                     <main>
                         <h1><a class="header" href="#introduction" id="introduction">Introduction</a></h1>
 <p><code>offchain::ipfs</code> is <a href="https://substrate.io">Substrate</a>, infused with <a href="https://ipfs.io">IPFS</a>.</p>
-<p>By including <a href="https://github.com/rs-ipfs/rust-ifps">Rust IPFS</a> in the native
+<blockquote>
+<p><strong>Substrate</strong> is a blockchain framework built in Rust, with off-chain worker capabilities.
+<br /><strong>IPFS</strong> is a distributed file storage network, connecting peers and their content.</p>
+</blockquote>
+<p>By including <a href="https://github.com/rs-ipfs/rust-ifps">the Rust implementation IPFS</a> in the native
 Substrate runtime, and by allowing pass-through wasm calls via Substrate's
 <a href="https://www.substrate.io/kb/learn-substrate/off-chain-workers">Off-chain Workers</a>, we enable a powerful and familiar subset of the IPFS APIs, including:</p>
 <ul>
@@ -178,7 +182,9 @@ Substrate runtime, and by allowing pass-through wasm calls via Substrate's
 <li><code>ipfs swarm connect</code> / <code>disconnect</code> - Swarm with other IPFS peers</li>
 <li><code>ipfs pin add</code> / <code>rm</code> - Pin and unpin content</li>
 </ul>
-<p>This means <em>no separate executable</em>: both blockchain and distributed storage are together in one.</p>
+<p><code>offchain::ipfs</code> allows you to account for your data transactions and DHT status in the blockchain.
+These on-chain insights can serve as a foundation for incentivized data storage and replication.
+This means <em>no separate executable</em>: both blockchain and distributed storage are together in one.</p>
 <p>The <code>offchain::ipfs</code> Manual is the documentation of our efforts, as well as useful explanations
 and code examples to get you started using this technology. Due to <code>offchain::ipfs</code> being a
 well-maintained fork of <a href="https://github.com/paritytech/substrate">paritytech/substrate</a>, this manual also stands in as typical
