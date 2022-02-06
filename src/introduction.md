@@ -1,6 +1,7 @@
 # Introduction
 
-> This doc is updated version of [offchain-ipfs](https://github.com/uddugteam/substrate/tree/offchain_ipfs) 
+> This doc is updated version of
+  [offchain-ipfs](https://github.com/uddugteam/substrate/tree/offchain_ipfs)
   for Substrate v3+.
 
 `offchain::ipfs` is [Substrate], infused with [IPFS].

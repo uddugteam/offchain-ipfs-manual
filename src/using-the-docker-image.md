@@ -11,7 +11,8 @@ The recommended way to use `offchain::ipfs` is via the [andskur/substrate-offcha
 $ docker pull andskur/substrate-offchain-ipfs
 ```
 
-The image comes with binary. The `substrate` binary does not have our custom pallets to interact with the IPFS node,
+The image comes with binary. The `substrate` binary does not have our custom
+pallets to interact with the IPFS node,
 instead you can connect to it through its multiaddr.
 
 The image exposes ports `9944` for WebSockets, `9933` for RPC, `30333` for p2p, and `9615` for
