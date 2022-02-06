@@ -10,7 +10,7 @@ Regardless, we still detail the example template functions here as a helpful ref
 feedback about these existing functions, or would like to request new functions, please open an issue
 at [rs-ipfs/substrate].
 
-[rs-ipfs/substrate]: https://github.com/rs-ipfs/substrate
+[rs-ipfs/substrate]: https://github.com/uddugteam/substrate
 
 ## Callables
 

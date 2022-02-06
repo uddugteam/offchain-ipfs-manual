@@ -7,7 +7,6 @@
 - [Building an `offchain::ipfs` app](./building-an-offchain-ipfs-app.md)
   - [Example Pallet](./template-pallet.md)
     - [Callables reference](./offchain-ipfs-callables.md)
-  - [Rust clients](./offchain-ipfs-rust.md)
   - [JavaScript clients](./offchain-ipfs-javascript.md)
 - [Architectural Explanation](./offchain-ipfs-architecture.md)
   - [Building from Source](./building-offchain-ipfs-source.md)

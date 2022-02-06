@@ -15,8 +15,8 @@ they appear in the code.
 
 You can also learn more by following the [Building a Custom Pallet] tutorial.
 
-[Building a Custom Pallet]: https://substrate.dev/docs/en/tutorials/build-a-dapp/pallet
-[source code]: https://github.com/rs-ipfs/substrate/blob/offchain_ipfs_bleeding_edge/bin/node-template/pallets/template/src/lib.rs
+[Building a Custom Pallet]: https://docs.substrate.io/tutorials/v3/proof-of-existence
+[source code]: https://github.com/uddugteam/substrate/blob/offchain_ipfs_bleeding_edge/bin/node-template/pallets/template/src/lib.rs
 [pallet]: https://substrate.dev/docs/en/knowledgebase/runtime/pallets
 
 ## Prelude
@@ -67,10 +67,9 @@ enum DhtCommand {
 
 ## The runtime configuration trait
 
-The `system::Trait` trait (not to be confused with the Rust `trait` keyword), allows you to define
-which capabilities from the runtime you want to include, and how you want to use them. You can also
-"tightly couple" your pallet to other pallets by adding their `Trait`s to your pallet's
-inherited trait list.
+The `system::Config` trait allows you to define which capabilities from the runtime you want to include,
+and how you want to use them. You can also "tightly couple" your pallet to other pallets by adding their
+`Config`s to your pallet's inherited trait list.
 
 Here, however, we keep things simple by:
 
@@ -79,17 +78,18 @@ Here, however, we keep things simple by:
 
 ```rust,ignore
 /// The pallet's configuration trait.
-pub trait Trait: system::Trait { // Use traits here to tightly couple to runtime
+#[pallet::config]
+pub trait Config: CreateSignedTransaction<Call<Self>> + frame_system::Config {
     /// The overarching event type.
     type Event: From<Event<Self>> + Into<<Self as system::Trait>::Event>;
 }
 ```
 
-Later in the code, we implement some helper functions on the `Module` struct. The function
+Later in the code, we implement some helper functions on the `Config` struct. The function
 bodies are omitted for brevity's sake.
 
 ```rust,ignore
-impl<T: Trait> Module<T> {
+impl<T: Config> Pallet<T> {
     // "Sends" a request to the local IPFS node by adding it to the offchain storage
     fn ipfs_request(req: IpfsRequest, deadline: impl Into<Option<Timestamp>>)
       -> Result<IpfsResponse, Error<T>>
@@ -114,16 +114,10 @@ impl<T: Trait> Module<T> {
 ## The `decl_` macros
 
 Pallets included in Substrate runtimes must adhere to the conventions of [FRAME].
-In practice, this means you must implement `decl_` macros:
-
-- `decl_module!`
-- `decl_event!`
-- `decl_storage!`
-- `decl_error!`
 
 [FRAME]: https://substrate.dev/docs/en/knowledgebase/runtime/frame
 
-### `decl_storage!`
+### storage
 
 Here, we define the data that will actually be stored on-chain when calling **extrinsics**.
 
@@ -134,43 +128,72 @@ runtime.
 This is where we use the `ConnectionQueue`, `DataQueue`, and `DhtQueue` command types from above.
 
 ```rust,ignore
-// This pallet's storage items.
-decl_storage! {
-    trait Store for Module<T: Trait> as TemplateModule {
-        // A list of addresses to connect to and disconnect from.
-        pub ConnectionQueue: Vec<ConnectionCommand>;
-        // A queue of data to publish or obtain on IPFS.
-        pub DataQueue: Vec<DataCommand>;
-        // A list of requests to the DHT.
-        pub DhtQueue: Vec<DhtCommand>;
-    }
-}
+    // This pallet's storage items.
+    #[pallet::storage]
+    #[pallet::getter(fn connection_queue)]
+    // A list of addresses to connect to and disconnect from.
+    pub type ConnectionQueue<T: Config> = StorageValue<_, Vec<ConnectionCommand>, ValueQuery>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn data_queue)]
+    // A queue of data to publish or obtain on IPFS.
+    pub type DataQueue<T: Config> = StorageValue<_, Vec<DataCommand>, ValueQuery>;
+
+    #[pallet::storage]
+    #[pallet::getter(fn dht_queue)]
+    // A list of requests to the DHT.
+    pub type DhtQueue<T: Config> = StorageValue<_, Vec<DhtCommand>, ValueQuery>;
 ```
 
-### `decl_event!`
+### event
 
 This is where we define what those events are and what they contain.
 
 Once a command is sent to the off-chain worker, one of the following chain events is emitted.
 
 ```rust,ignore
-// The pallet's events
-decl_event!(
-    pub enum Event<T> where AccountId = <T as system::Trait>::AccountId {
-        ConnectionRequested(AccountId),
-        DisconnectRequested(AccountId),
-        QueuedDataToAdd(AccountId),
-        QueuedDataToCat(AccountId),
-        QueuedDataToPin(AccountId),
-        QueuedDataToRemove(AccountId),
-        QueuedDataToUnpin(AccountId),
-        FindPeerIssued(AccountId),
-        FindProvidersIssued(AccountId),
+    // The pallet's events
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
+        /// Event documentation should end with an array that provides descriptive names for event
+        /// parameters. [something, who]
+        SomethingStored(u32, T::AccountId),
+        ConnectionRequested(T::AccountId),
+        DisconnectRequested(T::AccountId),
+        QueuedDataToAdd(T::AccountId),
+        QueuedDataToCat(T::AccountId),
+        QueuedDataToPin(T::AccountId),
+        QueuedDataToRemove(T::AccountId),
+        QueuedDataToUnpin(T::AccountId),
+        FindPeerIssued(T::AccountId),
+        FindProvidersIssued(T::AccountId),
     }
-);
 ```
 
-### `decl_module!`
+### hooks
+
+We should add some hooks that should be called on every new block.
+
+```rust,ignore
+#[pallet::hooks]
+impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
+    // Called at the beginning of every block before any extrinsics. Clears
+    // `ConnectionQueue` and `DhtQueue` values every block, and clears
+    // `DataQueue` every other block, since they should have been processed
+    // Returns a weight of 0
+    fn on_initialize(block_number: T::BlockNumber) -> Weight
+    
+    // Called at the beginning of every block to create extrinsics.
+    // - `connection_housekeeping` and `handle_dht_requests` called every block
+    // - `handle_data_requests` is called on every other block
+    // - `print_metadata` is called every 5 blocks
+    // blocks to alleviate some bandwidth and storage congestion
+    fn offchain_worker(block_number: T::BlockNumber)
+}
+```
+
+### call
 
 This section, perhaps the most critical section of any given pallet, is where you can define
 functions that are exposed via JSON-RPC to client libraries and, by proxy, your users.
@@ -189,74 +212,67 @@ fixed reference hardware." These are essentially _time limits_ for block creatio
 
 ```rust,ignore
 // The pallet's dispatchable functions.
-decl_module! {
-    /// The module declaration.
-    pub struct Module<T: Trait> for enum Call where origin: T::Origin {
-        // Called at the beginning of every block before any extrinsics. Clears
-        // `ConnectionQueue` and `DhtQueue` values every block, and clears
-        // `DataQueue` every other block, since they should have been processed
-        // Returns a weight of 0
-        fn on_initialize(block_number: T::BlockNumber) -> Weight
-
-        // Called at the beginning of every block to create extrinsics.
-        // - `connection_housekeeping` and `handle_dht_requests` called every block
-        // - `handle_data_requests` is called on every other block
-        // - `print_metadata` is called every 5 blocks
-        // blocks to alleviate some bandwidth and storage congestion
-        fn offchain_worker(block_number: T::BlockNumber)
-
-        /// Mark a `Multiaddr` as a desired connection target.
-        #[weight = 100_000]
-        pub fn ipfs_connect(origin, addr: Vec<u8>)
-
-        /// Queues a `Multiaddr` to be disconnected
-        #[weight = 500_000]
-        pub fn ipfs_disconnect(origin, addr: Vec<u8>)
-
-        /// Add arbitrary bytes to the IPFS repository.
-        #[weight = 200_000]
-        pub fn ipfs_add_bytes(origin, data: Vec<u8>)
-
-        /// Find and output IPFS data pointed to by the given `Cid`
-        #[weight = 100_000]
-        pub fn ipfs_cat_bytes(origin, cid: Vec<u8>)
-
-        /// Remove bytes from IPFS by `Cid`
-        #[weight = 300_000]
-        pub fn ipfs_remove_block(origin, cid: Vec<u8>)
-
-        /// Pins a given `Cid` non-recursively.
-        #[weight = 100_000]
-        pub fn ipfs_insert_pin(origin, cid: Vec<u8>)
-
-        /// Unpins a given `Cid` non-recursively.
-        #[weight = 100_000]
-        pub fn ipfs_remove_pin(origin, cid: Vec<u8>)
-
-        /// Find addresses associated with the given `PeerId`.
-        #[weight = 100_000]
-        pub fn ipfs_dht_find_peer(origin, peer_id: Vec<u8>)
-
-        /// Find the list of `PeerId`s known to be hosting the given `Cid`.
-        #[weight = 100_000]
-        pub fn ipfs_dht_find_providers(origin, cid: Vec<u8>)
-    }
+// Dispatchable functions allows users to interact with the pallet and invoke state changes.
+#[pallet::call]
+impl<T: Config> Pallet<T> {
+    /// Mark a `Multiaddr` as a desired connection target. The connection will be established
+    /// during the next run of the off-chain `connection_housekeeping` process.
+    #[pallet::weight(100_000)]
+    pub fn ipfs_connect(origin: OriginFor<T>, addr: Vec<u8>) -> DispatchResult
+    
+    /// Queues a `Multiaddr` to be disconnected. The connection will be severed during the next
+    /// run of the off-chain `connection_housekeeping` process.
+    #[pallet::weight(500_000)]
+    pub fn ipfs_disconnect(origin: OriginFor<T>, addr: Vec<u8>) -> DispatchResult
+    
+    /// Add arbitrary bytes to the IPFS repository. The registered `Cid` is printed out in the
+    /// logs.
+    #[pallet::weight(200_000)]
+    pub fn ipfs_add_bytes(origin: OriginFor<T>, data: Vec<u8>) -> DispatchResult
+    
+    /// Find IPFS data pointed to by the given `Cid`; if it is valid UTF-8, it is printed in the
+    /// logs verbatim; otherwise, the decimal representation of the bytes is displayed instead.
+    #[pallet::weight(100_000)]
+    pub fn ipfs_cat_bytes(origin: OriginFor<T>, cid: Vec<u8>) -> DispatchResult
+    
+    /// Add arbitrary bytes to the IPFS repository. The registered `Cid` is printed out in the
+    /// logs.
+    #[pallet::weight(300_000)]
+    pub fn ipfs_remove_block(origin: OriginFor<T>, cid: Vec<u8>) -> DispatchResult
+    
+    /// Pins a given `Cid` non-recursively.
+    #[pallet::weight(100_000)]
+    pub fn ipfs_insert_pin(origin: OriginFor<T>, cid: Vec<u8>) -> DispatchResult
+    
+    /// Unpins a given `Cid` non-recursively.
+    #[pallet::weight(100_000)]
+    pub fn ipfs_remove_pin(origin: OriginFor<T>, cid: Vec<u8>) -> DispatchResult
+    
+    /// Find addresses associated with the given `PeerId`.
+    #[pallet::weight(100_000)]
+    pub fn ipfs_dht_find_peer(origin: OriginFor<T>, peer_id: Vec<u8>) -> DispatchResult
+    
+    /// Find the list of `PeerId`s known to be hosting the given `Cid`.
+    #[pallet::weight(100_000)]
+    pub fn ipfs_dht_find_providers(origin: OriginFor<T>, cid: Vec<u8>) -> DispatchResult
 }
 ```
 
-### `decl_error!`
+### errors
 
 This is where we can define the myriad ways things can go wrong, as an enum.
 
 ```rust,ignore
-// The pallet's errors
-decl_error! {
-    pub enum Error for Module<T: Trait> {
+    #[pallet::error]
+    pub enum Error<T> {
+        /// Error names should be descriptive.
+        NoneValue,
+        /// Errors should have helpful documentation associated with them.
+        StorageOverflow,
         CantCreateRequest,
         RequestTimeout,
         RequestFailed,
     }
-}
 ```
 
 Read on to see examples of how you can make calls to the this example pallet from your application.

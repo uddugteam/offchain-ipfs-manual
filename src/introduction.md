@@ -1,11 +1,14 @@
 # Introduction
 
+> This doc is updated version of [offchain-ipfs](https://github.com/uddugteam/substrate/tree/offchain_ipfs) 
+  for Substrate v3+.
+
 `offchain::ipfs` is [Substrate], infused with [IPFS].
 
 > **Substrate** is a blockchain framework built in Rust, with off-chain worker capabilities.
 <br />**IPFS** is a distributed file storage network, connecting peers and their content.
 
-By including [the Rust implementation IPFS](https://github.com/rs-ipfs/rust-ifps) in the native
+By including [the Rust implementation IPFS](https://github.com/uddugteam/rust-ifps) in the native
 Substrate runtime, and by allowing pass-through wasm calls via Substrate's
 [Off-chain Workers], we enable a powerful and familiar subset of the IPFS APIs, including:
 
@@ -27,6 +30,8 @@ documentation, such as docs.rs and README.md files.
 
 This manual is presented by: [@koivunej], [@ljedrz], [@whalelephant], and [@aphelionz]
 
+Manual have updated to Sybstrate v3 by: [@andskur] and [Uddùg team]
+
 ## Disclaimers
 
 You should still consider this an **alpha preview**.
@@ -40,7 +45,9 @@ of `offchain::ipfs`.
 [Polkadot]: https://polkadot.network
 [Kusama]: https://kusama.network
 [IPFS]: https://ipfs.io
-[Off-Chain Workers]: https://www.substrate.io/kb/learn-substrate/off-chain-workers
+[Off-Chain Workers]: https://docs.substrate.io/v3/concepts/off-chain-features/
+[Uddùg team]: https://github.com/uddugteam
+[@andskur]: https://github.com/andskur
 [@koivunej]: https://github.com/koivunej
 [@ljedrz]: https://github.com/ljedrz
 [@whalelephant]: https://github.com/whalelephant

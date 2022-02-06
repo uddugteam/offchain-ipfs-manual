@@ -30,7 +30,7 @@ jobs:
 
     services:
       offchain-ipfs:
-        image: eqlabs/offchain-ipfs
+        image: andskur/substrate-offchain-ipfs
         ports:
           - 30330:30330
           - 9933:9933

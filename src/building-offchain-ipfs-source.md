@@ -6,7 +6,7 @@ can take quite a long time, even on "developer" hardware - particularly the dock
 ## Running the node from source
 
 ``` bash
-git clone https://github.com/rs-ipfs/substrate
+git clone https://github.com/uddugteam/substrate
 cd substrate
 git checkout offchain_ipfs
 cargo build --workspace
@@ -15,14 +15,14 @@ cargo build --workspace
 ## Building the docker image from source
 
 This is a multistage build based on Alpine linux. The resulting image will contain
-the `substrate-ipfs` binary and the `node-template` binary.
+the `substrate-ipfs` binary.
 
 We suggest you supply your own tag name.
 
 ```bash
-git clone https://github.com/rs-ipfs/substrate
+git clone https://github.com/uddugteam/substrate
 cd substrate
-git checkout offchain_ipfs_docker
+git checkout offchain_ipfs
 docker build --file .maintain/Dockerfile --tag [your-tag-here] .
 ```
 

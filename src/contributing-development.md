@@ -12,14 +12,6 @@ So, **if you end up trying this out, we would love to know how, and what your us
 - Share feedback on this manual by opening an issue at [rs-ipfs/offchain-ipfs-manual]
 - provide feedback on `offchain::ipfs` itself by opening an issue at [rs-ipfs/substrate]
 
-## Support `offchain::ipfs` financially
-
-[Equilibrium] is a consultancy that builds, and helps you build _on_ the distributed web. If
-you're part of an organization and want help implementing or improving `offchain::ipfs`,
-get in touch with us.
-
-- If you're an individual and want to support us financially, visit our [OpenCollective].
-
 ## Implement more IPFS functionality
 
 Some of the functionality that exists in [Rust IPFS] is not exposed via `offchain::ipfs`, and some
@@ -29,9 +21,6 @@ implementing it yourself.
 
 - Submit ideas for `offchain::ipfs` at [rs-ipfs/substrate].
 
-[Rust IPFS]: https://github.com/rs-ipfs/rust-ipfs
-[rs-ipfs/substrate]: https://github.com/rs-ipfs/substrate
-[rs-ipfs/offchain-ipfs-manual]: https://github.com/rs-ipfs/offchain-ipfs-manual
-[Equilibrium]: https://equilibrium.co
-[Are we IPFS yet?]: https://areweipfsyet.rs
-[OpenCollective]: https://opencollective.com/rs-ipfs
+[Rust IPFS]: https://github.com/uddugteam/rust-ipfs
+[rs-ipfs/substrate]: https://github.com/uddugteam/substrate
+[rs-ipfs/offchain-ipfs-manual]: https://github.com/uddugteam/offchain-ipfs-manual
