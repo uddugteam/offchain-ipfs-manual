@@ -27,16 +27,14 @@ The default command for the image is:
 Run the default with **dev** chain like so:
 
 ```bash
-docker run \
-  -p 9944:9944 \
+docker run -p 9944:9944 \                                                                                                                                                                                                       10172  03:01:10 
   -p 9933:9933 \
   -p 30333:30333 \
   -p 9615:9615 \
   -it \
   --rm \
-  --name sub-ipfs \
-  andskur/substrate-offchain-ipfs \
-  substrate --dev
+  --name node-template \
+  andskur/substrate-offchain-ipfs:latest
 ```
 
 This will work with any arguments you'd normally pass to `substrate`
