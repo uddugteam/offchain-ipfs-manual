@@ -27,7 +27,7 @@ The default command for the image is:
 Run the default with **dev** chain like so:
 
 ```bash
-docker run -p 9944:9944 \                                                                                                                                                                                                       10172  03:01:10 
+docker run -p 9944:9944 \
   -p 9933:9933 \
   -p 30333:30333 \
   -p 9615:9615 \
