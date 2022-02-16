@@ -144,7 +144,7 @@
                     <main>
                         <h1 id="substrate-core-modifications"><a class="header" href="#substrate-core-modifications">Substrate core modifications</a></h1>
 <p>Every one of <code>offchain::ipfs</code>'s functional modifications to the <a href="https://github.com/paritytech/substrate"><code>paritytech/substrate</code></a> core are
-encapsulated in a single commit on the <a href="https://github.com/uddugteam/substrate/tree/offchain_ipfs"><code>offchain_ipfs</code></a> branch of our repo.</p>
+encapsulated in a single commit on the <a href="https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3"><code>offchain_ipfs</code></a> branch of our repo.</p>
 <p>In this section we'll walk through these modifications so that you may understand them, and
 perhaps improve upon them yourself.</p>
 <h2 id="how-substrate-is-organized"><a class="header" href="#how-substrate-is-organized">How Substrate is organized</a></h2>
@@ -159,25 +159,25 @@ light client. Offchain workers are one of those clients</li>
 cover the parts that <code>offchain::ipfs</code> augments. At a very high level, we modeled this implementation
 after the existing <a href="https://github.com/paritytech/substrate/blob/master/client/offchain/src/api/http.rs"><code>offchain::http</code></a> module. You can look that over to get a sense of how it all
 works, or read on for more detail.</p>
-<p>From here on, most of the links will be to code points within the <a href="https://github.com/uddugteam/substrate/tree/offchain_ipfs"><code>offchain_ipfs</code></a> branch of the
+<p>From here on, most of the links will be to code points within the <a href="https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3"><code>offchain_ipfs</code></a> branch of the
 <code>offchain::ipfs</code> repo.</p>
 <h2 id="offchainipfs-lifecycle"><a class="header" href="#offchainipfs-lifecycle"><code>offchain::ipfs</code> lifecycle</a></h2>
 <ol>
 <li>
-<p>User runs one of the binaries, <a href="https://github.com/uddugteam/substrate/tree/offchain_ipfs_docker/bin/node/cli"><code>node</code></a>, or <a href="https://github.com/uddugteam/substrate/tree/offchain_ipfs_docker/bin/node-template"><code>node-template</code></a> which launches a Substrate runtime.</p>
+<p>User runs one of the binaries, <a href="https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3/bin/node/cli"><code>node</code></a>, or <a href="https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3/bin/node-template"><code>node-template</code></a> which launches a Substrate runtime.</p>
 </li>
 <li>
 <p>If the offchain worker is enabled in the configuration, a secondary runtime will start in both
-the <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs_docker/client/service/src/builder.rs#L266">full client</a> and <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs_docker/client/service/src/builder.rs#L333">light client</a> to power the IPFS node.</p>
+the <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/service/src/builder.rs#L266">full client</a> and <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/service/src/builder.rs#L333">light client</a> to power the IPFS node.</p>
 </li>
 <li>
-<p>The client will use <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L69"><code>IpfsApi</code></a> and <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L249"><code>IpfsWorker</code></a> to expose its functionality
-to any pallets that wish to access it, via <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api.rs#L189"><code>ipfs_request_start</code></a> and <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api.rs#L193"><code>ipfs_request_wait</code></a>.
+<p>The client will use <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api/ipfs.rs#L69"><code>IpfsApi</code></a> and <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api/ipfs.rs#L249"><code>IpfsWorker</code></a> to expose its functionality
+to any pallets that wish to access it, via <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api.rs#L189"><code>ipfs_request_start</code></a> and <a href="https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api.rs#L193"><code>ipfs_request_wait</code></a>.
 These calls will utilize the types explained below.</p>
 </li>
 <li>
 <p>If your node is configured to processes user input via a pallet, then users will make requests,
-typically in the form of <strong><a href="hthttps://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L249tps://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics">extrinsics</a></strong> called via JSON-RPC. A typical successful call goes
+typically in the form of <strong><a href="hthttps://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api/ipfs.rs#L249tps://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics">extrinsics</a></strong> called via JSON-RPC. A typical successful call goes
 something like:</p>
 <ol>
 <li>The JSON-RPC server in the substrate node will recieve the call and it will be the dispatched

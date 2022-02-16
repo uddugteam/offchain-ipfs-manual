@@ -148,7 +148,7 @@ can take quite a long time, even on &quot;developer&quot; hardware - particularl
 <h2 id="running-the-node-from-source"><a class="header" href="#running-the-node-from-source">Running the node from source</a></h2>
 <pre><code class="language-bash">git clone https://github.com/uddugteam/substrate
 cd substrate
-git checkout offchain_ipfs
+git checkout offchain-ipfs-v0.3
 cargo build --workspace
 </code></pre>
 <h2 id="building-the-docker-image-from-source"><a class="header" href="#building-the-docker-image-from-source">Building the docker image from source</a></h2>
@@ -157,7 +157,7 @@ the <code>substrate-ipfs</code> binary.</p>
 <p>We suggest you supply your own tag name.</p>
 <pre><code class="language-bash">git clone https://github.com/uddugteam/substrate
 cd substrate
-git checkout offchain_ipfs
+git checkout offchain-ipfs-v0.3
 docker build --file .maintain/Dockerfile --tag [your-tag-here] .
 </code></pre>
 <p>Refer to the <strong><a href="./using-the-docker-image.html">Using the Docker image</a></strong> section of for information about running the image.</p>
