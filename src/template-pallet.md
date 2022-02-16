@@ -16,7 +16,7 @@ they appear in the code.
 You can also learn more by following the [Building a Custom Pallet] tutorial.
 
 [Building a Custom Pallet]: https://docs.substrate.io/tutorials/v3/proof-of-existence
-[source code]: https://github.com/uddugteam/substrate/blob/offchain_ipfs_bleeding_edge/bin/node-template/pallets/template/src/lib.rs
+[source code]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/bin/node-template/pallets/template/src/lib.rs
 [pallet]: https://substrate.dev/docs/en/knowledgebase/runtime/pallets
 
 ## Prelude

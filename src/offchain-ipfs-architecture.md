@@ -15,7 +15,5 @@ In the rest of this chapter, we'll show you how to build the code in these branc
 take a closer look at what modifications were made to substrate to achieve `offchain::ipfs`.
 
 [`master`]: https://github.com/uddugteam/substrate
-[`offchain_ipfs`]: https://github.com/uddugteam/substrate/tree/offchain_ipfs
-[`offchain_ipfs_docker`]: https://github.com/uddugteam/substrate/tree/offchain_ipfs_docker
+[`offchain_ipfs`]: https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3
 [`paritytech/substrate`]: https://github.com/paritytech/substrate
-[`offchain_ipfs_bleeding_edge`]: https://github.com/uddugteam/substrate/tree/offchain_ipfs_bleeding_edge

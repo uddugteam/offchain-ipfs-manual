@@ -7,7 +7,7 @@ In this section we'll walk through these modifications so that you may understan
 perhaps improve upon them yourself.
 
 [`paritytech/substrate`]: https://github.com/paritytech/substrate
-[`offchain_ipfs`]: https://github.com/uddugteam/substrate/tree/offchain_ipfs
+[`offchain_ipfs`]: https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3
 
 ## How Substrate is organized
 
@@ -52,15 +52,15 @@ From here on, most of the links will be to code points within the [`offchain_ipf
    1. The response can be used to update a chain state through signed or unsigned transaction or be
       used in the rest of the call's logic.
 
-[`IpfsApi`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L69
-[`IpfsWorker`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L249
-[`ipfs_request_start`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api.rs#L189
-[`ipfs_request_wait`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api.rs#L193
-[extrinsics]: hthttps://github.com/uddugteam/substrate/blob/offchain_ipfs/client/offchain/src/api/ipfs.rs#L249tps://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics
-[full client]: https://github.com/uddugteam/substrate/blob/offchain_ipfs_docker/client/service/src/builder.rs#L266
-[light client]: https://github.com/uddugteam/substrate/blob/offchain_ipfs_docker/client/service/src/builder.rs#L333
-[`node`]: https://github.com/uddugteam/substrate/tree/offchain_ipfs_docker/bin/node/cli
-[`node-template`]: https://github.com/uddugteam/substrate/tree/offchain_ipfs_docker/bin/node-template
+[`IpfsApi`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api/ipfs.rs#L69
+[`IpfsWorker`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api/ipfs.rs#L249
+[`ipfs_request_start`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api.rs#L189
+[`ipfs_request_wait`]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api.rs#L193
+[extrinsics]: hthttps://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/offchain/src/api/ipfs.rs#L249tps://substrate.dev/docs/en/knowledgebase/learn-substrate/extrinsics
+[full client]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/service/src/builder.rs#L266
+[light client]: https://github.com/uddugteam/substrate/blob/offchain_ipfs-v0.3/client/service/src/builder.rs#L333
+[`node`]: https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3/bin/node/cli
+[`node-template`]: https://github.com/uddugteam/substrate/tree/offchain-ipfs-v0.3/bin/node-template
 
 ## Primitive Types
 
