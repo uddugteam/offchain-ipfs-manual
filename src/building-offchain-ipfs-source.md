@@ -8,7 +8,7 @@ can take quite a long time, even on "developer" hardware - particularly the dock
 ``` bash
 git clone https://github.com/uddugteam/substrate
 cd substrate
-git checkout offchain_ipfs
+git checkout offchain-ipfs-v0.3
 cargo build --workspace
 ```
 
@@ -22,7 +22,7 @@ We suggest you supply your own tag name.
 ```bash
 git clone https://github.com/uddugteam/substrate
 cd substrate
-git checkout offchain_ipfs
+git checkout offchain-ipfs-v0.3
 docker build --file .maintain/Dockerfile --tag [your-tag-here] .
 ```
 
