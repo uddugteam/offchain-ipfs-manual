@@ -11,4 +11,5 @@
 - [Architectural Explanation](./offchain-ipfs-architecture.md)
   - [Building from Source](./building-offchain-ipfs-source.md)
   - [Substrate Core Modifications](./substrate-core-modifications.md)
+- [Testing](./testing.md)
 - [Contributing / Development](./contributing-development.md)
